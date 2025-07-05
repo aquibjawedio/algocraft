@@ -7,3 +7,22 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// All Enums are here
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id              String   @id @default(uuid())
+  fullname        String
+  username        String   @unique
+  email           String   @unique
+  password        String
+  isContributor   Boolean  @default(false)
+  role            Role     @default(USER)
+  isEmailVerified Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
