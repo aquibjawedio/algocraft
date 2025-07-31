@@ -7,3 +7,31 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// All Enums Are defined here
+
+enum UserRole {
+  USER
+  CONTRIBUTOR
+  MODERATOR
+  ADMIN
+}
+
+// All models are being defined from here
+
+model User {
+  id           String   @id @default(uuid())
+  fullname     String
+  username     String   @unique
+  email        String   @unique
+  password     String
+  role         UserRole @default(USER)
+  bio          String?
+  refreshToken String?  @unique
+}
+
+model Problem {
+  id   String @id @default(uuid())
+  slug String @unique
+  name String
+}
