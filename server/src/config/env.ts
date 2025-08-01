@@ -13,6 +13,15 @@ interface EnvConfigDTO {
 
   REFRESH_TOKEN_SECRET: string;
   REFRESH_TOKEN_EXPIRY: string;
+
+  RESEND_API_KEY: string;
+
+  MAILTRAP_HOST: string;
+  MAILTRAP_PORT: number;
+  MAILTRAP_USERNAME: string;
+  MAILTRAP_PASSWORD: string;
+
+  SENDER_EMAIL: string;
 }
 
 const env: EnvConfigDTO = {
@@ -27,6 +36,15 @@ const env: EnvConfigDTO = {
 
   REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET || "",
   REFRESH_TOKEN_EXPIRY: process.env.REFRESH_TOKEN_EXPIRY || "7d",
+
+  RESEND_API_KEY: process.env.RESEND_API_KEY || "",
+
+  MAILTRAP_HOST: process.env.MAILTRAP_HOST || "",
+  MAILTRAP_PORT: Number(process.env.MAILTRAP_PORT) || 2525,
+  MAILTRAP_USERNAME: process.env.MAILTRAP_USERNAME || "",
+  MAILTRAP_PASSWORD: process.env.MAILTRAP_PASSWORD || "",
+
+  SENDER_EMAIL: process.env.SENDER_EMAIL || "",
 };
 
 export { env };

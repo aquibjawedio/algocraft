@@ -1,3 +1,4 @@
+import { env } from "../config/env.js";
 import { prisma } from "../config/prisma.js";
 import {
   LoginSchemaDTO,
@@ -6,9 +7,11 @@ import {
   VerifyEmailSchemaDTO,
 } from "../schemas/auth.schema.js";
 import { ApiError } from "../utils/ApiError.js";
-import { hashPassword } from "../utils/helper.js";
+import { emailVerificationMailGenContent } from "../utils/emailTemplates.js";
+import { generateTemporaryToken, hashPassword } from "../utils/helper.js";
 import { logger } from "../utils/logger.js";
 import { sanitizeUser } from "../utils/sanitize.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 export const registerService = async ({
   fullname,
@@ -55,8 +58,31 @@ export const registerService = async ({
     },
   });
 
-  logger.info(`User created successfully with ID: ${user.id}`);
-  return sanitizeUser(user);
+  logger.info(
+    `User created successfully with ID: ${user.id} Now sending verification email to ${email}`
+  );
+
+  const { hashedToken, unHashedToken, tokenExpiry } = generateTemporaryToken();
+
+  const verificationUrl = `${env.FRONTEND_URL}/auth/verify/${unHashedToken}`;
+
+  await sendEmail({
+    email,
+    subject: "Verify Email",
+    mailGenContent: emailVerificationMailGenContent(fullname, verificationUrl),
+  });
+
+  const updatedUser = await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      emailVerificationToken: hashedToken,
+      emailVerificationTokenExpiry: tokenExpiry,
+    },
+  });
+
+  logger.info(`Verification email sent to ${email}. User ID: ${updatedUser.id}`);
+
+  return sanitizeUser(updatedUser);
 };
 
 export const verifyEmailService = async ({ token }: VerifyEmailSchemaDTO) => {};

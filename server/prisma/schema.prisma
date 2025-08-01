@@ -26,28 +26,28 @@ enum Difficulty {
 // All models are being defined from here
 
 model User {
-  id                      String   @id @default(uuid())
-  fullname                String
-  username                String   @unique
-  email                   String   @unique
-  password                String?
-  bio                     String?
-  avatarUrl               String?
-  socials                 Json?
-  ranking                 Int?     @default(0)
-  problemsSolved          Int      @default(0)
-  contestRating           Int?     @default(0)
-  contributions           Int      @default(0)
-  badges                  String[] @default([])
-  role                    UserRole @default(USER)
-  isEmailVerified         Boolean  @default(false)
-  emailVerificationToken  String?  @unique
-  emailVerificationExpiry DateTime @default(now())
-  forgotPasswordToken     String?  @unique
-  forgotPasswordExpiry    DateTime @default(now())
-  refreshToken            String?  @unique
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
+  id                           String   @id @default(uuid())
+  fullname                     String
+  username                     String   @unique
+  email                        String   @unique
+  password                     String?
+  bio                          String?
+  avatarUrl                    String?
+  socials                      Json?
+  ranking                      Int?     @default(0)
+  problemsSolved               Int      @default(0)
+  contestRating                Int?     @default(0)
+  contributions                Int      @default(0)
+  badges                       String[] @default([])
+  role                         UserRole @default(USER)
+  isEmailVerified              Boolean  @default(false)
+  emailVerificationToken       String?  @unique
+  emailVerificationTokenExpiry DateTime @default(now())
+  forgotPasswordToken          String?  @unique
+  forgotPasswordTokenExpiry    DateTime @default(now())
+  refreshToken                 String?  @unique
+  createdAt                    DateTime @default(now())
+  updatedAt                    DateTime @updatedAt
 }
 
 model Problem {
