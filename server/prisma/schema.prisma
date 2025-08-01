@@ -17,21 +17,53 @@ enum UserRole {
   ADMIN
 }
 
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
 // All models are being defined from here
 
 model User {
-  id           String   @id @default(uuid())
-  fullname     String
-  username     String   @unique
-  email        String   @unique
-  password     String
-  role         UserRole @default(USER)
-  bio          String?
-  refreshToken String?  @unique
+  id                      String   @id @default(uuid())
+  fullname                String
+  username                String   @unique
+  email                   String   @unique
+  password                String?
+  bio                     String?
+  avatarUrl               String?
+  socials                 Json?
+  ranking                 Int?     @default(0)
+  problemsSolved          Int      @default(0)
+  contestRating           Int?     @default(0)
+  contributions           Int      @default(0)
+  badges                  String[] @default([])
+  role                    UserRole @default(USER)
+  isEmailVerified         Boolean  @default(false)
+  emailVerificationToken  String?  @unique
+  emailVerificationExpiry DateTime @default(now())
+  forgotPasswordToken     String?  @unique
+  forgotPasswordExpiry    DateTime @default(now())
+  refreshToken            String?  @unique
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
 }
 
 model Problem {
-  id   String @id @default(uuid())
-  slug String @unique
-  name String
+  id          String     @id @default(uuid())
+  slug        String     @unique
+  title       String
+  description String
+  difficulty  Difficulty @default(EASY)
+  creatorId   String
+  hints       Json?
+  constraints String?
+  upvotes     Int        @default(0)
+  downvotes   Int        @default(0)
+  no          Int        @unique @default(autoincrement())
+  metadata    Json?
+  examples    Json
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
