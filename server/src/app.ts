@@ -13,6 +13,7 @@ import { authRouter } from "./routes/auth.route";
 import { userRouter } from "./routes/user.route";
 import { problemRouter } from "./routes/problem.route";
 import { executionRouter } from "./routes/execution.route";
+import { submissionRouter } from "./routes/submission.route";
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use("/api/v1/health", healthRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/problems", problemRouter);
+app.use("/api/v1/problems", submissionRouter);
 app.use("/api/v1/execution", executionRouter);
 
 // Handle error middleware
