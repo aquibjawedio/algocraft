@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 import { env } from "./config/env";
+import { healthRouter } from "./routes/health.route";
 
 const app = express();
 
@@ -17,5 +18,10 @@ app.use(
 app.use(express.json({ limit: "64kb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// Handle all routes
+app.use("/api/v1", healthRouter);
+
+// Handle error middleware
 
 export { app };
