@@ -4,13 +4,14 @@ import cookieParser from "cookie-parser";
 
 import { env } from "./config/env";
 
+// Importing middlewares
+import { errorHandler } from "./middlewares/error.middleware";
+
 // Importing routes
 import { healthRouter } from "./routes/health.route";
 import { authRouter } from "./routes/auth.route";
 import { userRouter } from "./routes/user.route";
-
-// Importing middlewares
-import { errorHandler } from "./middlewares/error.middleware";
+import { problemRouter } from "./routes/problem.route";
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use(cookieParser());
 app.use("/api/v1/health", healthRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/problems", problemRouter);
 
 // Handle error middleware
 
