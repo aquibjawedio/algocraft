@@ -7,3 +7,187 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// All Enums Are defined here
+
+enum UserRoleEnum {
+  USER
+  CONTRIBUTOR
+  MODERATOR
+  ADMIN
+}
+
+enum DifficultyEnum {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum LanguageEnum {
+  CPP
+  PYTHON
+  JAVA
+  JAVASCRIPT
+}
+
+enum StatusEnum {
+  PENDING
+  ACCEPTED
+  WRONG_ANSWER
+  TIME_LIMIT_EXCEEDED
+  MEMORY_LIMIT_EXCEEDED
+  RUNTIME_ERROR
+  COMPILATION_ERROR
+  INTERNAL_ERROR
+}
+
+// All models are being defined from here
+
+model User {
+  id                           String          @id @default(uuid())
+  fullname                     String
+  username                     String          @unique
+  email                        String          @unique
+  password                     String?
+  bio                          String?
+  avatarUrl                    String?
+  socials                      Json?
+  ranking                      Int?            @default(0)
+  problemsSolved               Int             @default(0)
+  contestRating                Int?            @default(0)
+  contributions                Int             @default(0)
+  badges                       String[]        @default([])
+  role                         UserRoleEnum    @default(USER)
+  isEmailVerified              Boolean         @default(false)
+  emailVerificationToken       String?         @unique
+  emailVerificationTokenExpiry DateTime?
+  forgotPasswordToken          String?         @unique
+  forgotPasswordTokenExpiry    DateTime?
+  refreshToken                 String?         @unique
+  createdAt                    DateTime        @default(now())
+  updatedAt                    DateTime        @updatedAt
+  createdProblems              Problem[]
+  Submissions                  Submission[]
+  SolvedProblems               SolvedProblem[]
+}
+
+model Problem {
+  id                 String              @id @default(uuid())
+  slug               String              @unique
+  title              String
+  description        String
+  difficulty         DifficultyEnum      @default(EASY)
+  hints              Json?
+  constraints        String?
+  upvotes            Int                 @default(0)
+  downvotes          Int                 @default(0)
+  no                 Int                 @unique @default(autoincrement())
+  metadata           Json?
+  examples           Json?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  creator            User?               @relation(fields: [creatorId], references: [id])
+  creatorId          String?
+  testCases          TestCase[]
+  wrapperCodes       WrapperCode[]
+  referenceSolutions ReferenceSolution[]
+  Submissions        Submission[]
+  tags               Tag[]               @relation("ProblemTags")
+  companies          Company[]           @relation("CompanyProblems")
+  SolvedProblem      SolvedProblem[]
+  starterCodes       StarterCode[]
+}
+
+model StarterCode {
+  id        String   @id @default(uuid())
+  language  String
+  code      String
+  problem   Problem? @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  problemId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TestCase {
+  id        String   @id @default(uuid())
+  input     String
+  output    String
+  problem   Problem? @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  problemId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WrapperCode {
+  id        String   @id @default(uuid())
+  language  String
+  code      String
+  problem   Problem? @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  problemId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ReferenceSolution {
+  id        String   @id @default(uuid())
+  language  String
+  code      String
+  problem   Problem? @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  problemId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Tag {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  problems  Problem[] @relation("ProblemTags")
+}
+
+model Company {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  logoUrl   String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  problems  Problem[] @relation("CompanyProblems")
+}
+
+model Submission {
+  id                String       @id @default(uuid())
+  language          LanguageEnum @default(JAVASCRIPT)
+  status            StatusEnum   @default(PENDING)
+  code              String
+  passedTestCases   Int          @default(0)
+  totalTestCases    Int          @default(0)
+  averageTime       Float        @default(0.0)
+  averageMemory     Float        @default(0.0)
+  firstFailedInput  String?
+  outputOnFailure   String?
+  expectedOnFailure String?
+  runtimePercentile Float?       @default(0.0)
+  memoryPercentile  Float?       @default(0.0)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  userId            String
+  problemId         String
+  problem           Problem      @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  user              User         @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([problemId])
+}
+
+model SolvedProblem {
+  id        String   @id @default(uuid())
+  userId    String
+  problemId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  problem   Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, problemId])
+}
