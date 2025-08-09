@@ -7,6 +7,7 @@ import { env } from "./config/env";
 // Importing routes
 import { healthRouter } from "./routes/health.route";
 import { authRouter } from "./routes/auth.route";
+import { userRouter } from "./routes/user.route";
 
 // Importing middlewares
 import { errorHandler } from "./middlewares/error.middleware";
@@ -28,6 +29,7 @@ app.use(cookieParser());
 // Handle all routes
 app.use("/api/v1/health", healthRouter);
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/users", userRouter);
 
 // Handle error middleware
 
