@@ -15,7 +15,7 @@ const MonacoEditor = ({ language, value, onChange }: MonacoEditorProps) => {
       value={value}
       onChange={(value) => onChange(value || "")}
       theme="custom-vscode-dark"
-      onMount={(editor, monaco) => {
+      onMount={(_, monaco) => {
         monaco.editor.defineTheme("custom-vscode-dark", {
           base: "vs-dark",
           inherit: true,
