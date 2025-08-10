@@ -14,3 +14,19 @@ export const registerSchema = z.object({
 
 export type LoginFormDTO = z.infer<typeof loginSchema>;
 export type RegisterFormDTO = z.infer<typeof registerSchema>;
+export type ApiError = {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+  message?: string;
+};
+
+export type ApiResponse = {
+  data: {
+    data: {
+      message?: string;
+    };
+  };
+};

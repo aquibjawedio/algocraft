@@ -77,6 +77,7 @@ model Problem {
   title              String
   description        String
   difficulty         DifficultyEnum      @default(EASY)
+  originalSource     Json?
   hints              Json?
   constraints        String?
   upvotes            Int                 @default(0)

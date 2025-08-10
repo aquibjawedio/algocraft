@@ -45,6 +45,7 @@ CREATE TABLE "public"."Problem" (
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "difficulty" "public"."DifficultyEnum" NOT NULL DEFAULT 'EASY',
+    "originalSource" JSONB,
     "hints" JSONB,
     "constraints" TEXT,
     "upvotes" INTEGER NOT NULL DEFAULT 0,

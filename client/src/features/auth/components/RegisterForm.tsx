@@ -7,28 +7,24 @@ import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
-import { z } from "zod";
-
-const registerSchema = z.object({
-  fullname: z.string().min(1, "Fullname is required"),
-  username: z.string().min(5, "Username must be at least 5 characters long"),
-  email: z.email("Invalid email address").nonempty("Email is required"),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
-});
-
-type RegisterFormDTO = z.infer<typeof registerSchema>;
+import { registerSchema } from "../schemas/authSchema";
+import type { RegisterFormDTO } from "../schemas/authSchema";
+import { useAuthStore } from "@/stores/authStore";
+import SpinLoader from "@/components/shared/SpinLoader";
 
 const RegisterForm = () => {
   const [hidePassword, setHidePassword] = useState(true);
 
+  const { registerUser } = useAuthStore();
+
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isSubmitted },
   } = useForm({ resolver: zodResolver(registerSchema) });
 
-  const onSubmit = async (data: RegisterFormDTO) => {
-    console.log("Form submitted : ", data);
+  const onSubmit = async (formData: RegisterFormDTO) => {
+    await registerUser(formData);
   };
 
   return (
@@ -126,9 +122,15 @@ const RegisterForm = () => {
             <Button
               type="submit"
               className="w-full cursor-pointer"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isSubmitted}
             >
-              Register
+              {isSubmitting ? (
+                <SpinLoader />
+              ) : isSubmitted ? (
+                "Registered Successfully"
+              ) : (
+                "Register"
+              )}
             </Button>
 
             <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">

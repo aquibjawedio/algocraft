@@ -1,37 +1,12 @@
 import { axiosClient } from "@/api/axiosClient";
-import type { LoginFormDTO } from "@/features/auth/schemas/authSchema";
+import type {
+  ApiError,
+  ApiResponse,
+  LoginFormDTO,
+  RegisterFormDTO,
+} from "@/features/auth/schemas/authSchema";
 import { create } from "zustand";
-
-type ApiError = {
-  response?: {
-    data?: {
-      message?: string;
-    };
-  };
-  message?: string;
-};
-
-type ApiResponse = {
-  data: {
-    data: {
-      message?: string;
-      user?: UserDTO;
-    };
-  };
-};
-
-type UserDTO = {
-  id: string;
-  fullname: string;
-  username: string;
-  email: string;
-  role: string;
-  isEmailVerified: boolean;
-  avatarUrl: string | null;
-  bio: string | null;
-  createdAt: string;
-  updatedAt: string;
-};
+import type { UserDTO } from "@/features/user/schemas/userSchema";
 
 type AuthStore = {
   user: UserDTO | null;
@@ -45,6 +20,7 @@ type AuthStore = {
   clearSuccess: () => void;
   handleError: (error: ApiError, fallback?: string) => void;
   handleSuccess: (response: ApiResponse, fallback?: string) => void;
+  registerUser: (formData: RegisterFormDTO) => void;
   loginUser: (formData: LoginFormDTO) => void;
   fetchUserProfile: () => void;
 };
@@ -71,6 +47,28 @@ const useAuthStore = create<AuthStore>((set, get) => ({
   handleSuccess: (response: ApiResponse, fallback = "Operation successful") => {
     const message = response?.data?.data?.message || fallback;
     set({ success: message });
+  },
+
+  registerUser: async (formData: RegisterFormDTO) => {
+    const {
+      startLoading,
+      stopLoading,
+      handleError,
+      handleSuccess,
+      clearError,
+    } = get();
+    try {
+      startLoading();
+      const res = await axiosClient.post("/auth/register", formData);
+      handleSuccess(res, "Registration successful");
+      clearError();
+    } catch (error) {
+      console.error("Registration error:", error);
+      handleError(error as ApiError, "Failed to register");
+      set({ user: null, isAuthenticated: false });
+    } finally {
+      stopLoading();
+    }
   },
 
   loginUser: async (formData: LoginFormDTO) => {

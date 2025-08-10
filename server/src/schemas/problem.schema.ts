@@ -8,7 +8,13 @@ export const createProblemSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   difficulty: z.enum(["EASY", "MEDIUM", "HARD"]),
-
+  originalSource: z
+    .object({
+      name: z.string().min(1, "Source name is required"),
+      logo: z.string().trim().min(1, "Source logo URL is required"),
+      link: z.string().trim().min(1, "Source logo URL is required"),
+    })
+    .optional(),
   hints: z.array(z.string()).optional().default([]),
   constraints: z.string().optional().default(""),
   no: z.number().int().positive(),
