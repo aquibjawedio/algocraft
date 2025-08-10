@@ -1,0 +1,185 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
+import { z } from "zod";
+
+const registerSchema = z.object({
+  fullname: z.string().min(1, "Fullname is required"),
+  username: z.string().min(5, "Username must be at least 5 characters long"),
+  email: z.email("Invalid email address").nonempty("Email is required"),
+  password: z.string().min(8, "Password must be at least 8 characters long"),
+});
+
+type RegisterFormDTO = z.infer<typeof registerSchema>;
+
+const RegisterForm = () => {
+  const [hidePassword, setHidePassword] = useState(true);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({ resolver: zodResolver(registerSchema) });
+
+  const onSubmit = async (data: RegisterFormDTO) => {
+    console.log("Form submitted : ", data);
+  };
+
+  return (
+    <Card className="w-full max-w-md overflow-hidden p-0 shadow-lg">
+      <CardContent className="grid p-0">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-6 md:p-8">
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col items-center text-center">
+              <h1 className="text-2xl font-bold">Welcome</h1>
+              <p className="text-muted-foreground text-balance">
+                Create an account to get started
+              </p>
+            </div>
+
+            <div className="grid gap-3">
+              <Label htmlFor="fullname">Fullname</Label>
+              <Input
+                id="fullname"
+                type="fullname"
+                {...register("fullname")}
+                placeholder="Enter your fullname"
+                required
+              />
+              {errors.fullname && (
+                <p className="text-red-600 text-sm">
+                  {errors.fullname.message}
+                </p>
+              )}
+            </div>
+
+            <div className="grid gap-3">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                type="username"
+                {...register("username")}
+                placeholder="Enter your username"
+                required
+              />
+              {errors.username && (
+                <p className="text-red-600 text-sm">
+                  {errors.username.message}
+                </p>
+              )}
+            </div>
+
+            <div className="grid gap-3">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                {...register("email")}
+                placeholder="Enter your email"
+                required
+              />
+              {errors.email && (
+                <p className="text-red-600 text-sm">{errors.email.message}</p>
+              )}
+            </div>
+
+            <div className="grid gap-3">
+              <div className="flex items-center">
+                <Label htmlFor="password">Password</Label>
+              </div>
+
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={hidePassword ? "password" : "text"}
+                  required
+                  {...register("password")}
+                  placeholder="Enter your password"
+                  className="pr-10"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setHidePassword(!hidePassword)}
+                  className="absolute right-0  top-1/2 -translate-y-1/2 cursor-pointer hover:bg-transparent bg-transparent"
+                >
+                  {hidePassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </Button>
+              </div>
+              {errors.password && (
+                <p className="text-red-600 text-sm">
+                  {errors.password.message || "Password is required"}
+                </p>
+              )}
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full cursor-pointer"
+              disabled={isSubmitting}
+            >
+              Register
+            </Button>
+
+            <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+              <span className="bg-card text-muted-foreground relative z-10 px-2">
+                Or continue with
+              </span>
+            </div>
+
+            <Button
+              variant="outline"
+              type="button"
+              className="w-full gap-2 cursor-pointer"
+              onClick={() =>
+                (window.location.href = `${
+                  import.meta.env.VITE_BACKEND_URL
+                }/api/v1/auth/google`)
+              }
+            >
+              <img
+                width="48"
+                height="48"
+                src="https://img.icons8.com/color/48/google-logo.png"
+                alt="google-logo"
+                className="w-6 h-6"
+              />
+              <span>Register with Google</span>
+            </Button>
+
+            <div className="text-center text-sm flex items-center justify-center gap-2">
+              <span>Already have an account?</span>
+              <Link
+                to="/auth/login"
+                className="hover:underline underline-offset-4"
+              >
+                Login
+              </Link>
+            </div>
+            <div className="text-center text-sm flex items-center justify-center gap-2">
+              <span>Email not recieved for verificaiton ? </span>
+              <Link
+                to="/auth/resend"
+                className="hover:underline underline-offset-4 font-medium"
+              >
+                Resend
+              </Link>
+            </div>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default RegisterForm;

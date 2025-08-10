@@ -1,5 +1,14 @@
+import { useEffect } from "react";
+import AppRouter from "./routes/AppRouter";
+import { useAuthStore } from "./stores/authStore";
+
 const App = () => {
-  return <div>App</div>;
+  const { fetchUserProfile } = useAuthStore();
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, [fetchUserProfile]);
+  return <AppRouter />;
 };
 
 export default App;
