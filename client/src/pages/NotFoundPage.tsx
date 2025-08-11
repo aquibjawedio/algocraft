@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const NotFoundPage = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 relative overflow-hidden">
@@ -14,12 +16,12 @@ const NotFoundPage = () => {
       </p>
 
       <div className="mt-8 z-10">
-        <a
-          href="/"
+        <Link
+          to="/"
           className="inline-block px-6 py-2 rounded-full border border-muted-foreground text-foreground hover:bg-muted/20 transition-all duration-200"
         >
           Go back to Home
-        </a>
+        </Link>
       </div>
     </div>
   );

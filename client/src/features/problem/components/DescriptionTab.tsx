@@ -30,9 +30,9 @@ const DescriptionTab = ({ problem }: DescriptionTabProps) => {
   }
 
   return (
-    <ScrollArea className="flex-1 h-full p-4 py-2 pb-20">
+    <ScrollArea className="flex-1 h-full p-4 py-2 pb-20 bg-background">
       <div className="flex flex-col gap-1">
-        <h1 className="text-xl font-bold tracking-tight leading-snug">
+        <h1 className="text-xl font-bold tracking-tight leading-snug text-foreground">
           {problem.no + ". " + problem.title}
         </h1>
         <Badge
@@ -54,42 +54,43 @@ const DescriptionTab = ({ problem }: DescriptionTabProps) => {
 
       {problem.examples?.length ? (
         <section className="mt-10 space-y-6">
-          <h3 className="text-lg font-semibold border-b border-border/40 pb-2">
-            Examples
-          </h3>
           {problem.examples.map((ex, i) => (
             <div
               key={i}
-              className="transition hover:bg-muted/5 rounded-md space-y-3 pl-5 relative"
+              className="transition hover:bg-muted/5 rounded-md space-y-3  relative"
             >
               <span className="font-semibold text-foreground block mb-1">
                 Example {i + 1}
               </span>
 
-              <div className="absolute left-6 top-8 bottom-0 w-0.5 bg-[#2E2E2E] rounded pb-2" />
+              {/* Vertical connector line */}
+              <div className="absolute left-0 top-8 bottom-0 w-0.5 bg-border rounded pb-2" />
 
+              {/* Input */}
               <div className="flex items-start">
-                <div className="w-1 bg-red-500 rounded mr-3" />
-                <pre className="whitespace-pre-wrap text-sm leading-6">
+                <div className="w-1 bg-primary rounded mr-3" />
+                <pre className="whitespace-pre-wrap text-sm leading-6 text-foreground">
                   <span className="font-semibold text-foreground">Input:</span>{" "}
                   {ex.input}
                 </pre>
               </div>
 
-              <div className="flex items-start">
-                <div className="w-1 bg-blue-500 rounded mr-3" />
+              {/* Output */}
+              <div className="flex items-start text-foreground">
+                <div className="w-1 bg-secondary rounded mr-3" />
                 <pre className="whitespace-pre-wrap text-sm leading-6">
                   <span className="font-semibold text-foreground">Output:</span>{" "}
                   {ex.output}
                 </pre>
               </div>
 
+              {/* Explanation */}
               {ex.explanation && (
                 <div className="flex items-start">
-                  <div className="w-1 bg-green-500 rounded mr-3" />
-                  <pre className="whitespace-pre-wrap text-sm leading-6">
+                  <div className="w-1 bg-accent rounded mr-3" />
+                  <pre className="whitespace-pre-wrap text-sm leading-6 text-foreground">
                     <span className="font-semibold text-foreground">
-                      Explanation:
+                      Explanation: 
                     </span>{" "}
                     {ex.explanation}
                   </pre>
@@ -102,10 +103,10 @@ const DescriptionTab = ({ problem }: DescriptionTabProps) => {
 
       {problem.constraints && (
         <section className="mt-10">
-          <h3 className="text-lg font-semibold border-b border-border/40 pb-2">
+          <h3 className="text-lg font-semibold border-b border-border/40 pb-2 text-foreground">
             Constraints
           </h3>
-          <pre className="rounded-md p-4 text-sm whitespace-pre-wrap bg-muted/5">
+          <pre className="rounded-md p-4 text-sm whitespace-pre-wrap bg-muted/5 text-foreground">
             {problem.constraints}
           </pre>
         </section>
@@ -120,13 +121,13 @@ const DescriptionTab = ({ problem }: DescriptionTabProps) => {
                 value={`hint-${i}`}
                 className="rounded-md overflow-hidden border border-border/30 bg-muted/5 hover:bg-muted/10 transition cursor-pointer"
               >
-                <AccordionTrigger className="flex items-center gap-2 p-2 text-sm hover:bg-muted/10">
+                <AccordionTrigger className="flex items-center gap-2 p-2 text-sm hover:bg-muted/10 text-foreground">
                   <div className="flex items-center gap-1">
                     <Lightbulb className="w-4 h-4 text-yellow-400" />
                     <span>Hint {i + 1}</span>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="p-4 text-sm leading-6">
+                <AccordionContent className="p-4 text-sm leading-6 text-foreground">
                   {hint}
                 </AccordionContent>
               </AccordionItem>
@@ -135,12 +136,10 @@ const DescriptionTab = ({ problem }: DescriptionTabProps) => {
         </section>
       ) : null}
 
-      {/* Metadata */}
       {(problem.metadata?.topics?.length ||
         problem.metadata?.timeComplexity ||
         problem.metadata?.spaceComplexity) && (
         <section className="mt-12 text-sm text-muted-foreground space-y-4">
-          {/* Topics */}
           {problem.metadata?.topics?.length ? (
             <div className="flex items-start gap-2">
               <Tags className="w-4 h-4 text-foreground mt-0.5" />
@@ -151,7 +150,6 @@ const DescriptionTab = ({ problem }: DescriptionTabProps) => {
             </div>
           ) : null}
 
-          {/* Time Complexity */}
           {problem.metadata?.timeComplexity && (
             <div className="flex items-start gap-2">
               <Timer className="w-4 h-4 text-foreground mt-0.5" />
@@ -164,7 +162,6 @@ const DescriptionTab = ({ problem }: DescriptionTabProps) => {
             </div>
           )}
 
-          {/* Space Complexity */}
           {problem.metadata?.spaceComplexity && (
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-foreground mt-0.5" />

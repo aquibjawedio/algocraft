@@ -14,14 +14,14 @@ const ProblemNavbar = ({
   isExecuting,
 }: ProblemNavbarProps) => {
   return (
-    <div className="z-10 relative w-full flex items-center justify-between p-1 px-4 bg-card/5 backdrop-blur-md border-b border-border">
+    <div className="z-10 relative w-full flex items-center justify-between p-1 px-4 backdrop-blur-md border-b border-border bg-background/90">
       <div className="flex items-center gap-2">
         <Link
           to="/problems"
-          className="flex items-center gap-1 text-yellow-500 hover:text-yellow-300 transition"
+          className="flex items-center gap-1 text-foreground hover:text-yellow-600 transition"
         >
           <ChevronLeft className="w-5 h-5" />
-          <span className="font-medium text-sm">Problems</span>
+          <span className="font-medium text-sm ">Problems</span>
         </Link>
       </div>
 
@@ -33,7 +33,7 @@ const ProblemNavbar = ({
           className="border-border hover:bg-accent hover:text-accent-foreground cursor-pointer"
         >
           <Play className="w-4 h-4 text-yellow-400" />
-          <span>Run</span>
+          <span className="text-foreground">Run</span>
         </Button>
 
         <Button
@@ -43,7 +43,7 @@ const ProblemNavbar = ({
           className="border-border hover:bg-accent hover:text-accent-foreground cursor-pointer"
         >
           <CloudUpload className="w-4 h-4 text-yellow-400" />
-          <span>Submit</span>
+          <span className="text-foreground">Submit</span>
         </Button>
       </div>
 

@@ -1,6 +1,7 @@
 import { axiosClient } from "@/api/axiosClient";
 import type { ApiError, ApiResponse } from "@/features/auth/schemas/authSchema";
 import { create } from "zustand";
+import type { SubmissionDTO } from "@/features/problem/schemas/problemSchema";
 
 interface TestResultDTO {
   input: string;
@@ -11,8 +12,10 @@ interface TestResultDTO {
 
 type ExecutionStore = {
   testResults: TestResultDTO[] | null;
-  submitResults: string | null;
+  submissions: SubmissionDTO[] | null;
+  submission: SubmissionDTO | null;
   executing: boolean;
+  isLoading: boolean;
   error: string | null;
   success: string | null;
   startLoading: () => void;
@@ -26,12 +29,20 @@ type ExecutionStore = {
     code: string,
     language: string
   ) => void | Promise<void>;
+  submitCode?: (
+    slug: string,
+    code: string,
+    language: string
+  ) => void | Promise<void>;
+  getAllSubmissions: (slug: string) => void | Promise<void>;
 };
 
 const useExecutionStore = create<ExecutionStore>((set, get) => ({
   testResults: null,
-  submitResults: null,
+  submissions: null,
+  submission: null,
   executing: false,
+  isLoading: false,
   error: null,
   success: null,
 
@@ -65,6 +76,40 @@ const useExecutionStore = create<ExecutionStore>((set, get) => ({
       handleSuccess(response, "Code executed successfully");
     } catch (error) {
       handleError(error as ApiError, "Failed to run code");
+    } finally {
+      stopLoading();
+    }
+  },
+
+  submitCode: async (slug: string, code: string, language: string) => {
+    const { startLoading, stopLoading, handleError, handleSuccess } = get();
+    try {
+      startLoading();
+      const response = await axiosClient.post(`/execution/submit`, {
+        slug,
+        code,
+        language,
+      });
+      set({ submission: response.data.data.result, error: null });
+      handleSuccess(response, "Code submitted successfully");
+      set({
+        submissions: [...(get().submissions || []), response.data.data.result],
+      });
+    } catch (error) {
+      handleError(error as ApiError, "Failed to submit code");
+    } finally {
+      stopLoading();
+    }
+  },
+
+  getAllSubmissions: async (slug: string) => {
+    const { startLoading, stopLoading, handleError } = get();
+    try {
+      startLoading();
+      const response = await axiosClient.get(`/problems/${slug}/submissions`);
+      set({ submissions: response.data.data.submissions, error: null });
+    } catch (error) {
+      handleError(error as ApiError, "Failed to fetch submissions");
     } finally {
       stopLoading();
     }

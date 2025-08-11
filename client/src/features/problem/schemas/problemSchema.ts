@@ -85,4 +85,42 @@ export const problemSchema = z.object({
     .optional(),
 });
 
+export type SubmissionDTO = {
+  id: string;
+  language: string;
+  status: string;
+  code: string;
+  passedTestCases: number;
+  totalTestCases: number;
+  averageTime: number;
+  averageMemory: number;
+  firstFailedInput: string | null;
+  outputOnFailure: string | null;
+  expectedOnFailure: string | null;
+  runtimePercentile: number;
+  memoryPercentile: number;
+  createdAt: string;
+  updatedAt: string;
+  userId: string;
+  problemId: string;
+  user: {
+    fullname: string;
+    username: string;
+    avatarUrl: string | null;
+    bio: string | null;
+  };
+  problem: {
+    title: string;
+    slug: string;
+    description: string;
+    difficulty: string;
+    tags: {
+      id: string;
+      name: string;
+      createdAt: string;
+      updatedAt: string;
+    }[];
+  };
+};
+
 export type ProblemSchemaDTO = z.infer<typeof problemSchema>;

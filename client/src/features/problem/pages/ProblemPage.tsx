@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/select";
 import ProblemNavbar from "../components/ProblemNavbar";
 import DescriptionTab from "../components/DescriptionTab";
+import SubmissionTab from "../components/SubmissionTab";
 
 const TabListControl = [
   {
@@ -59,7 +60,8 @@ const ProblemPage = () => {
   const [language, setLanguage] = useState("JAVASCRIPT");
 
   const { problem, isLoading, getProblemBySlug } = useProblemStore();
-  const { runCode, testResults, executing } = useExecutionStore();
+  const { runCode, testResults, executing, submission, submitCode } =
+    useExecutionStore();
   const { slug } = useParams<{ slug: string }>();
 
   useEffect(() => {
@@ -76,7 +78,15 @@ const ProblemPage = () => {
   }, [problem, language]);
 
   const handleRunCode = async () => {
-    if (slug && code) await runCode(slug, code, language);
+    if (slug && code) {
+      await runCode(slug, code, language);
+    }
+  };
+
+  const handleSubmitCode = async () => {
+    if (slug && code) {
+      await submitCode?.(slug, code, language);
+    }
   };
 
   const handleSwitchLanguage = (newLanguage: string) => {
@@ -108,12 +118,14 @@ const ProblemPage = () => {
     );
   }
 
+  console.log("Submimssion Data:", submission);
+
   return (
     <>
       <div className="w-screen h-screen bg-[#0E0E0E] text-white overflow-hidden">
         <ProblemNavbar
           onRun={handleRunCode}
-          onSubmit={() => {}}
+          onSubmit={handleSubmitCode}
           isExecuting={executing}
         />
 
@@ -126,22 +138,22 @@ const ProblemPage = () => {
           <ResizablePanel
             defaultSize={38}
             minSize={25}
-            className="border-r border-border bg-[#141414] flex flex-col min-h-0"
+            className="border-r border-border bg-background flex flex-col min-h-0"
           >
             <Tabs
               defaultValue="description"
               className="flex flex-col flex-1 min-h-0"
             >
-              <TabsList className="bg-[#141414] border-b border-border rounded-none px-4 gap-8 shrink-0 w-full">
+              <TabsList className="bg-background border-b border-border rounded-none px-2 gap-2 shrink- w-full">
                 {TabListControl.map((tab, index) => (
                   <TabsTrigger
                     key={index}
                     value={tab.value}
-                    className="relative pb-3 pt-3 px-1 text-sm font-medium text-gray-400 hover:text-white transition-colors data-[state=active]:text-white cursor-pointer"
+                    className="relative pb-3 pt-3 px-1 text-sm font-medium text-foreground hover:bg-muted focus:bg-muted data-[state=active]:bg-accent-foreground/10 data-[state=active]:text-forground data-[state=active]:border-card flex items-center gap-1 cursor-pointer"
                   >
                     {tab.icon}
                     <span className="ml-1">{tab.label}</span>
-                    <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#FFD700] transition-all duration-300 data-[state=active]:w-full" />
+                    <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-accent transition-all duration-300 data-[state=active]:w-full" />
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -157,9 +169,7 @@ const ProblemPage = () => {
                 value="submissions"
                 className="flex flex-col flex-1 min-h-0"
               >
-                <ScrollArea className="flex-1 min-h-0 px-6 py-4">
-                  <p className="text-gray-400">No submissions yet.</p>
-                </ScrollArea>
+                <SubmissionTab />
               </TabsContent>
 
               <TabsContent
@@ -167,7 +177,7 @@ const ProblemPage = () => {
                 className="flex flex-col flex-1 min-h-0"
               >
                 <ScrollArea className="flex-1 min-h-0 px-6 py-4">
-                  <p className="text-gray-400">
+                  <p className="text-muted-foreground">
                     No community solutions available.
                   </p>
                 </ScrollArea>
@@ -178,7 +188,7 @@ const ProblemPage = () => {
                 className="flex flex-col flex-1 min-h-0"
               >
                 <ScrollArea className="flex-1 min-h-0 px-6 py-4">
-                  <p className="text-gray-400">No submissions yet.</p>
+                  <p className="text-muted-foreground">No submissions yet.</p>
                 </ScrollArea>
               </TabsContent>
             </Tabs>
@@ -202,21 +212,21 @@ const ProblemPage = () => {
                 minSize={40}
                 className="border-b border-border flex flex-col min-h-0"
               >
-                <div className="flex items-center justify-between px-2 border-b border-border bg-[#141414]">
-                  <div className="text-gray-200 flex gap-1 items-center">
+                <div className="flex items-center justify-between px-2 border-b border-border bg-background text-foreground">
+                  <div className=" flex gap-1 items-center">
                     <CodeXml className="w-4 h-4 text-[#e6c200]" />
                     <span className="text-sm font-medium">Code</span>
                   </div>
                   <Select value={language} onValueChange={handleSwitchLanguage}>
-                    <SelectTrigger className="bg-[#1E1E1E] border border-border text-white">
+                    <SelectTrigger className="bg-background border border-border text-foreground py-0">
                       <SelectValue placeholder="Select language" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1E1E1E] text-white border border-border">
+                    <SelectContent className="bg-background text-foreground border border-border">
                       {problem?.starterCodes?.map((code) => (
                         <SelectItem
                           key={code.language}
                           value={code.language}
-                          className="text-sm hover:bg-[#2E2E2E] focus:bg-[#e6c200]"
+                          className="text-xs hover:bg-card focus:bg-[#e6c200] cursor-pointer"
                         >
                           {code.language}
                         </SelectItem>
@@ -226,7 +236,7 @@ const ProblemPage = () => {
                 </div>
 
                 {/* Monaco container: ensure min-h-0 and overflow-hidden (editor will fill) */}
-                <div className="flex-1 min-h-0 overflow-hidden">
+                <div className="flex-1 min-h-0 overflow-hidden bg-background">
                   <MonacoEditor
                     value={code}
                     onChange={setCode}
@@ -243,55 +253,68 @@ const ProblemPage = () => {
                 minSize={8}
                 className="flex flex-col p-0 min-h-0"
               >
-                <Card className="flex-1 rounded-none border-none bg-[#141414] text-gray-200 overflow-hidden p-0">
+                <Card className="flex-1 rounded-none border-none bg-background text-foreground overflow-hidden p-0">
                   <CardContent className="h-full flex flex-col p-2 min-h-0">
                     {hasTestResults ? (
                       <Tabs
                         defaultValue="test1"
-                        className="flex flex-col h-full min-h-0"
+                        className="flex flex-col h-full min-h-0 bg-background"
                       >
-                        <TabsList className="gap-2 rounded-md shrink-0">
-                          {testResults &&
-                            testResults.map((_, i) => (
-                              <TabsTrigger
-                                key={i}
-                                value={`test${i + 1}`}
-                                className="text-sm"
-                              >
-                                Test {executing ? <SpinLoader /> : i + 1}
-                              </TabsTrigger>
-                            ))}
+                        <TabsList className="text-sm data-[state=active]:bg-accent-foreground/10 data-[state=active]:text-forground data-[state=active]:border-card rounded-md cursor-pointer">
+                          {testResults?.map((_, i) => (
+                            <TabsTrigger
+                              key={i}
+                              value={`test${i + 1}`}
+                              className="text-sm  data-[state=active]:shadow-sm rounded-md data-[state=active]:bg-accent-foreground/10 data-[state=active]:text-forground data-[state=active]:border-card cursor-pointer"
+                            >
+                              Test {executing ? <SpinLoader /> : i + 1}
+                            </TabsTrigger>
+                          ))}
                         </TabsList>
-
                         <div className="flex-1 min-h-0">
-                          <ScrollArea className="flex-1 min-h-0 px-2 py-2">
-                            {testResults &&
-                              testResults.map((res, i) => (
+                          <ScrollArea className="flex-1 min-h-0 py-2">
+                            {testResults?.map((res, i) => {
+                              const passed =
+                                res.expected?.trim() === res.output?.trim();
+                              return (
                                 <TabsContent
                                   key={i}
                                   value={`test${i + 1}`}
-                                  className="p-2 bg-[#1E1E1E] rounded-md"
+                                  className="p-3 rounded-md bg-card border border-border/30 space-y-4"
                                 >
-                                  <p className="text-xs text-muted-foreground">
-                                    Input
-                                  </p>
-                                  <pre className="bg-[#2E2E2E] p-2 rounded-md mb-2 text-sm">
-                                    {res.input}
-                                  </pre>
-                                  <p className="text-xs text-muted-foreground">
-                                    Expected
-                                  </p>
-                                  <pre className="bg-[#2E2E2E] p-2 rounded-md mb-2 text-sm">
-                                    {res.expected}
-                                  </pre>
-                                  <p className="text-xs text-muted-foreground">
-                                    Your Output
-                                  </p>
-                                  <pre className="bg-[#2E2E2E] p-2 rounded-md mb-2 text-sm">
-                                    {res.output ?? "No output"}
-                                  </pre>
+                                  <section>
+                                    <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">
+                                      Input
+                                    </p>
+                                    <pre className="p-2 rounded-md text-sm bg-muted/10">
+                                      {res.input}
+                                    </pre>
+                                  </section>
+                                  <section>
+                                    <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">
+                                      Expected
+                                    </p>
+                                    <pre className="p-2 rounded-md text-sm bg-muted/10">
+                                      {res.expected}
+                                    </pre>
+                                  </section>
+                                  <section>
+                                    <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">
+                                      Your Output
+                                    </p>
+                                    <pre
+                                      className={`p-2 rounded-md text-sm ${
+                                        passed
+                                          ? "bg-accent/20"
+                                          : "bg-destructive/20"
+                                      }`}
+                                    >
+                                      {res.output ?? "No output"}
+                                    </pre>
+                                  </section>
                                 </TabsContent>
-                              ))}
+                              );
+                            })}
                           </ScrollArea>
                         </div>
                       </Tabs>
@@ -300,45 +323,48 @@ const ProblemPage = () => {
                         defaultValue="test1"
                         className="flex flex-col h-full min-h-0"
                       >
-                        <TabsList className="mb-2 shrink-0">
+                        <TabsList className="mb-2 shrink-0 bg-background border-border border rounded-md">
                           {problem.examples?.map((_, i) => (
                             <TabsTrigger
                               key={i}
                               value={`test${i + 1}`}
-                              className="text-sm"
+                              className="text-sm data-[state=active]:bg-accent-foreground/10 data-[state=active]:text-forground data-[state=active]:border-card rounded-md cursor-pointer"
                             >
                               Test {executing ? <SpinLoader /> : i + 1}
                             </TabsTrigger>
                           ))}
                         </TabsList>
-
                         <div className="flex-1 min-h-0">
                           <ScrollArea className="flex-1 min-h-0 px-2 py-2">
-                            {problem?.examples?.map((ex, i) => (
+                            {problem.examples?.map((ex, i) => (
                               <TabsContent
                                 key={i}
                                 value={`test${i + 1}`}
-                                className="p-2 bg-[#1E1E1E] rounded-md"
+                                className="p-3 rounded-md bg-card border border-border/30 space-y-4"
                               >
-                                <p className="text-xs text-muted-foreground">
-                                  Input
-                                </p>
-                                <pre className="bg-[#2E2E2E] p-2 rounded-md mb-2 text-sm">
-                                  {ex.input}
-                                </pre>
-                                <p className="text-xs text-muted-foreground">
-                                  Expected
-                                </p>
-                                <pre className="bg-[#2E2E2E] p-2 rounded-md mb-2 text-sm">
-                                  {ex.output}
-                                </pre>
+                                <section>
+                                  <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">
+                                    Input
+                                  </p>
+                                  <pre className="p-2 rounded-md text-sm bg-muted/10">
+                                    {ex.input}
+                                  </pre>
+                                </section>
+                                <section>
+                                  <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">
+                                    Expected
+                                  </p>
+                                  <pre className="p-2 rounded-md text-sm bg-muted/10">
+                                    {ex.output}
+                                  </pre>
+                                </section>
                               </TabsContent>
                             ))}
                           </ScrollArea>
                         </div>
                       </Tabs>
                     ) : (
-                      <div className="text-gray-400">
+                      <div className="text-muted-foreground text-sm p-4">
                         No test cases available.
                       </div>
                     )}

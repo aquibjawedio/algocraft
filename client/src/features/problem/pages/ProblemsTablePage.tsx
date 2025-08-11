@@ -7,7 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Check } from "lucide-react";
+import { Check, Hash } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useProblemStore } from "@/stores/problemStore";
 import SpinLoader from "@/components/shared/SpinLoader";
@@ -37,14 +37,16 @@ const ProblemsTablePage = () => {
   }
 
   return (
-    <div className="min-h-screen p-6 bg-[#141414] text-foreground">
+    <div className="min-h-screen p-6 bg-background text-foreground">
       <h1 className="text-2xl font-bold mb-6">Problems</h1>
       <div className="rounded-lg border border-border bg-muted/50 backdrop-blur-lg shadow-lg">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-8 text-center">✓</TableHead>
-              <TableHead className="w-10 text-center">#</TableHead>
+              <TableHead className="w-10 text-center">
+                <Hash size={16} className="mx-auto text-muted-foreground" />
+              </TableHead>
               <TableHead>Title</TableHead>
               <TableHead>Difficulty</TableHead>
               <TableHead className="w-20 text-center">Source</TableHead>
@@ -66,12 +68,9 @@ const ProblemsTablePage = () => {
                     <div className="w-3.5 h-3.5 rounded-full border border-muted-foreground/40 mx-auto" />
                   )}
                 </TableCell>
-
                 <TableCell className="font-medium text-center text-foreground">
                   {problem.no}
                 </TableCell>
-
-                {/* Problem Title */}
                 <TableCell>
                   <Link
                     to={`/problems/${problem.slug}`}
@@ -80,8 +79,6 @@ const ProblemsTablePage = () => {
                     {problem.title}
                   </Link>
                 </TableCell>
-
-                {/* Difficulty */}
                 <TableCell
                   className={`${
                     difficultyColors[problem.difficulty]
@@ -89,8 +86,6 @@ const ProblemsTablePage = () => {
                 >
                   {problem.difficulty}
                 </TableCell>
-
-                {/* Source */}
                 <TableCell className="text-center">
                   <a
                     href={problem.originalSource?.link}
