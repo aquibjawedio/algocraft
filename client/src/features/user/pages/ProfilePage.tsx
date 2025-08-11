@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Mail, ShieldCheck, BadgeCheck, Calendar, Info } from "lucide-react";
+import SpinLoader from "@/components/shared/SpinLoader";
 
 const ProfilePage = () => {
   const { user } = useAuthStore();
@@ -11,7 +12,7 @@ const ProfilePage = () => {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">Loading user profile...</p>
+        <SpinLoader />
       </div>
     );
   }

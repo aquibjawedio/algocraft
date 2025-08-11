@@ -5,9 +5,9 @@ const Layout = () => {
   return (
     <div className="bg-background text-foreground transition-colors duration-300">
       <Navbar />
-      <main className="max-w-7xl mx-auto">
+      <main>
         <Outlet />
-      </main> 
+      </main>
     </div>
   );
 };

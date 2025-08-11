@@ -12,8 +12,16 @@ export const registerSchema = z.object({
   password: z.string().trim().min(8, "Password must be at least 8 characters"),
 });
 
+export const resendEmailSchema = z.object({
+  email: z.email().nonempty("Email is required"),
+});
+
 export type LoginFormDTO = z.infer<typeof loginSchema>;
 export type RegisterFormDTO = z.infer<typeof registerSchema>;
+export type ResendEmailFormDTO = z.infer<typeof resendEmailSchema>;
+
+
+
 export type ApiError = {
   response?: {
     data?: {

@@ -254,7 +254,7 @@ const ProblemPage = () => {
                 className="flex flex-col p-0 min-h-0"
               >
                 <Card className="flex-1 rounded-none border-none bg-background text-foreground overflow-hidden p-0">
-                  <CardContent className="h-full flex flex-col p-2 min-h-0">
+                  <CardContent className="h-full flex flex-col p-1 min-h-0">
                     {hasTestResults ? (
                       <Tabs
                         defaultValue="test1"
@@ -272,7 +272,7 @@ const ProblemPage = () => {
                           ))}
                         </TabsList>
                         <div className="flex-1 min-h-0">
-                          <ScrollArea className="flex-1 min-h-0 py-2">
+                          <ScrollArea className="flex-1 min-h-0">
                             {testResults?.map((res, i) => {
                               const passed =
                                 res.expected?.trim() === res.output?.trim();
@@ -280,10 +280,10 @@ const ProblemPage = () => {
                                 <TabsContent
                                   key={i}
                                   value={`test${i + 1}`}
-                                  className="p-3 rounded-md bg-card border border-border/30 space-y-4"
+                                  className="rounded-md bg-card border border-border/30 p-3 "
                                 >
-                                  <section>
-                                    <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">
+                                  <section >
+                                    <p className="text-xs font-semibold text-muted-foreground uppercase mb-1 ">
                                       Input
                                     </p>
                                     <pre className="p-2 rounded-md text-sm bg-muted/10">
@@ -335,7 +335,7 @@ const ProblemPage = () => {
                           ))}
                         </TabsList>
                         <div className="flex-1 min-h-0">
-                          <ScrollArea className="flex-1 min-h-0 px-2 py-2">
+                          <ScrollArea className="flex-1 min-h-0">
                             {problem.examples?.map((ex, i) => (
                               <TabsContent
                                 key={i}

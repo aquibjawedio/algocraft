@@ -2,6 +2,7 @@ import ForgotPasswordPage from "@/features/auth/pages/ForgotPasswordPage";
 import LoginPage from "@/features/auth/pages/LoginPage";
 import RegisterPage from "@/features/auth/pages/RegisterPage";
 import ResendEmailPage from "@/features/auth/pages/ResendEmailPage";
+import VerifyEmailPage from "@/features/auth/pages/VerifyEmailPage";
 import ProblemPage from "@/features/problem/pages/ProblemPage";
 import ProblemsTablePage from "@/features/problem/pages/ProblemsTablePage";
 import ProfilePage from "@/features/user/pages/ProfilePage";
@@ -12,7 +13,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 const AppRouter = () => {
-  const { user } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
 
   return (
     <div className="dark">
@@ -21,19 +22,30 @@ const AppRouter = () => {
           <Route path="/" element={<LandingPage />} />
           <Route
             path="/auth/login"
-            element={user ? <Navigate to="/profile" /> : <LoginPage />}
+            element={
+              isAuthenticated ? <Navigate to="/profile" /> : <LoginPage />
+            }
           />
           <Route
             path="/auth/register"
-            element={user ? <Navigate to="/profile" /> : <RegisterPage />}
+            element={
+              isAuthenticated ? <Navigate to="/profile" /> : <RegisterPage />
+            }
           />
-          <Route path="/auth/resend" element={<ResendEmailPage />} />
           <Route path="/auth/forgot" element={<ForgotPasswordPage />} />
           <Route path={`/profile`} element={<ProfilePage />} />
+          <Route path="/problems" element={<ProblemsTablePage />} />
         </Route>
-        <Route path="/problems" element={<ProblemsTablePage />} />
         <Route path="/problems/:slug" element={<ProblemPage />} />
-        // User routes // Note Found Route
+        // Email Verification and Password Reset
+        <Route path="/auth/resend" element={<ResendEmailPage />} />
+        <Route
+          path="/auth/verify/:token"
+          element={
+            isAuthenticated ? <Navigate to="/profile" /> : <VerifyEmailPage />
+          }
+        />
+        // Not Found Route
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </div>

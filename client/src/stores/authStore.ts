@@ -21,7 +21,10 @@ type AuthStore = {
   handleError: (error: ApiError, fallback?: string) => void;
   handleSuccess: (response: ApiResponse, fallback?: string) => void;
   registerUser: (formData: RegisterFormDTO) => void;
+  verifyEmail: (token: string) => void;
+  resendVerificationEmail: (email: string) => void;
   loginUser: (formData: LoginFormDTO) => void;
+  logoutUser: () => void;
   fetchUserProfile: () => void;
 };
 
@@ -71,6 +74,50 @@ const useAuthStore = create<AuthStore>((set, get) => ({
     }
   },
 
+  verifyEmail: async (token: string) => {
+    const {
+      startLoading,
+      stopLoading,
+      handleError,
+      handleSuccess,
+      clearError,
+    } = get();
+    try {
+      startLoading();
+      const res = await axiosClient.get(`/auth/verify-email/${token}`);
+      handleSuccess(res, "Email verified successfully");
+      clearError();
+    } catch (error) {
+      console.error("Email verification error:", error);
+      handleError(error as ApiError, "Failed to verify email");
+    } finally {
+      stopLoading();
+    }
+  },
+
+  resendVerificationEmail: async (email: string) => {
+    const {
+      startLoading,
+      stopLoading,
+      handleError,
+      handleSuccess,
+      clearError,
+    } = get();
+    try {
+      startLoading();
+      const res = await axiosClient.post("/auth/resend-email", {
+        email,
+      });
+      handleSuccess(res, "Verification email resent successfully");
+      clearError();
+    } catch (error) {
+      console.error("Resend verification email error:", error);
+      handleError(error as ApiError, "Failed to resend verification email");
+    } finally {
+      stopLoading();
+    }
+  },
+
   loginUser: async (formData: LoginFormDTO) => {
     const {
       startLoading,
@@ -97,6 +144,23 @@ const useAuthStore = create<AuthStore>((set, get) => ({
     }
   },
 
+  logoutUser: async () => {
+    const { startLoading, stopLoading, clearError, clearSuccess } = get();
+    try {
+      startLoading();
+      await axiosClient.post("/auth/logout");
+      set({ user: null, isAuthenticated: false });
+      clearSuccess();
+    } catch (error) {
+      console.error("Logout error:", error);
+      clearError();
+    } finally {
+      stopLoading();
+      clearError();
+      clearSuccess();
+    }
+  },
+
   fetchUserProfile: async () => {
     const {
       startLoading,
@@ -104,11 +168,12 @@ const useAuthStore = create<AuthStore>((set, get) => ({
       handleError,
       handleSuccess,
       clearError,
+      clearSuccess,
     } = get();
     try {
       startLoading();
       const response = await axiosClient.get(`/users/profile`);
-      set({ user: response.data.data.user });
+      set({ user: response.data.data.user, isAuthenticated: true });
       handleSuccess(response, "User profile fetched successfully");
       clearError();
     } catch (error) {
@@ -116,6 +181,8 @@ const useAuthStore = create<AuthStore>((set, get) => ({
       handleError(error as ApiError, "Failed to fetch user profile");
     } finally {
       stopLoading();
+      clearError();
+      clearSuccess();
     }
   },
 }));
