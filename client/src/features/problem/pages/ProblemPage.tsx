@@ -104,7 +104,7 @@ const ProblemPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen text-white">
+      <div className="bg-background text-foreground flex flex-col items-center justify-center h-screen">
         <SpinLoader />
       </div>
     );
@@ -129,12 +129,10 @@ const ProblemPage = () => {
           isExecuting={executing}
         />
 
-        {/* IMPORTANT: top-level group must be constrained (h-full) */}
         <ResizablePanelGroup
           direction="horizontal"
           className="h-full w-full flex"
         >
-          {/* LEFT: description pane - ensure min-h-0 so its children can shrink */}
           <ResizablePanel
             defaultSize={38}
             minSize={25}
@@ -196,7 +194,6 @@ const ProblemPage = () => {
 
           <ResizableHandle className="bg-[#1A1A1A]" withHandle />
 
-          {/* RIGHT: editor pane - ensure min-h-0 */}
           <ResizablePanel
             defaultSize={62}
             minSize={40}
@@ -206,7 +203,6 @@ const ProblemPage = () => {
               direction="vertical"
               className="flex-1 min-h-0 flex"
             >
-              {/* Editor upper */}
               <ResizablePanel
                 defaultSize={70}
                 minSize={40}
@@ -235,7 +231,6 @@ const ProblemPage = () => {
                   </Select>
                 </div>
 
-                {/* Monaco container: ensure min-h-0 and overflow-hidden (editor will fill) */}
                 <div className="flex-1 min-h-0 overflow-hidden bg-background">
                   <MonacoEditor
                     value={code}
@@ -249,7 +244,7 @@ const ProblemPage = () => {
 
               {/* Test Results panel */}
               <ResizablePanel
-                defaultSize={30}
+                defaultSize={48}
                 minSize={8}
                 className="flex flex-col p-0 min-h-0"
               >
@@ -282,7 +277,7 @@ const ProblemPage = () => {
                                   value={`test${i + 1}`}
                                   className="rounded-md bg-card border border-border/30 p-3 "
                                 >
-                                  <section >
+                                  <section>
                                     <p className="text-xs font-semibold text-muted-foreground uppercase mb-1 ">
                                       Input
                                     </p>

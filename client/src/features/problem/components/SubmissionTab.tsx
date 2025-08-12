@@ -11,6 +11,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Check, XCircle, Clock, Zap } from "lucide-react";
+import CodeBlock from "@/components/shared/CodeBlock";
 
 const SubmissionTab = () => {
   const { getAllSubmissions, submissions, isLoading } = useExecutionStore();
@@ -109,6 +110,11 @@ const SubmissionTab = () => {
                   <span>Memory: {sub.memoryPercentile} percentile</span>
                 </div>
               </div>
+
+              <CodeBlock
+                code={sub.code}
+                language={sub.language.toLowerCase()}
+              />
 
               {sub.firstFailedInput && (
                 <div>
