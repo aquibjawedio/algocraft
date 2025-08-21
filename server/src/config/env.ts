@@ -26,6 +26,12 @@ interface EnvConfigDTO {
 
   JUDGE0_API_URL: string;
   GEMINI_API_KEY: string;
+
+  REDIS_HOST: string;
+  REDIS_PORT: number;
+  REDIS_USERNAME: string;
+  REDIS_PASSWORD: string;
+  REDIS_DB: number;
 }
 
 const env: EnvConfigDTO = {
@@ -53,6 +59,12 @@ const env: EnvConfigDTO = {
 
   JUDGE0_API_URL: process.env.JUDGE0_API_URL || "",
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || "",
+
+  REDIS_HOST: process.env.REDIS_HOST || "localhost",
+  REDIS_PORT: Number(process.env.REDIS_PORT) || 6379,
+  REDIS_USERNAME: process.env.REDIS_USERNAME || "default",
+  REDIS_PASSWORD: process.env.REDIS_PASSWORD || "",
+  REDIS_DB: Number(process.env.REDIS_DB) || 0,
 };
 
 export { env };

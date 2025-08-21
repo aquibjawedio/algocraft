@@ -1,8 +1,9 @@
-import { IBrowser, UAParser } from "ua-parser-js";
+import { UAParser } from "ua-parser-js";
 import { clearCookieOptions, cookieOptions } from "../config/cookie.js";
 import { env } from "../config/env.js";
 import { prisma } from "../config/prisma.js";
 import {
+  CheckUsernameAvailabilitySchemaDTO,
   LoginSchemaDTO,
   LogoutSchemaDTO,
   RefreshTokenSchemaDTO,
@@ -21,6 +22,8 @@ import { generateAccessToken } from "../utils/jwt.js";
 import { logger } from "../utils/logger.js";
 import { sanitizeUser } from "../utils/sanitize.js";
 import { sendEmail } from "../utils/sendEmail.js";
+import { Response } from "express";
+import { redis } from "../config/redis.js";
 
 export const registerService = async ({
   fullname,
@@ -88,6 +91,8 @@ export const registerService = async ({
       emailVerificationTokenExpiry: tokenExpiry,
     },
   });
+
+  redis.set(`user:username:${username}`, "taken", "EX", 60 * 60 * 24 * 7);
 
   logger.info(`Verification email sent to ${email}. User ID: ${updatedUser.id}`);
 
@@ -249,6 +254,7 @@ export const refreshAccessTokenService = async (
   { refreshToken }: RefreshTokenSchemaDTO,
   ipAddress: string,
   userAgent: string,
+  res: Response
 ) => {
   logger.info(`Attempt To Refresh Access Token : Verifying refreshToken - ${refreshToken}`);
 
@@ -264,6 +270,8 @@ export const refreshAccessTokenService = async (
     logger.error(
       `Refresh Access Token Failed : Session not found with refreshToken - ${refreshToken}`
     );
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
     throw new ApiError(404, "Session not found! Please login first.");
   }
 
@@ -322,5 +330,51 @@ export const refreshAccessTokenService = async (
     accessTokenOptions,
     refreshTokenOptions,
     user: sanitizeUser(user),
+  };
+};
+
+export const checkUsernameAvailabilityService = async ({
+  username,
+}: CheckUsernameAvailabilitySchemaDTO) => {
+  logger.info(`Checking availability for username: ${username}`);
+
+  const usernameExists = await redis.get(`user:username:${username}`);
+
+  if (usernameExists === "available") {
+    logger.info(`Username ${username} is available in cache`);
+    return {
+      isAvailable: true,
+      message: "Username is available",
+    };
+  }
+
+  if (usernameExists === "taken") {
+    logger.warn(`Username ${username} is already taken`);
+    return {
+      isAvailable: false,
+      message: "Username is already taken",
+    };
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      username,
+    },
+  });
+
+  if (user) {
+    logger.warn(`Username ${username} is already taken`);
+    await redis.set(`user:username:${username}`, "taken", "EX", 60 * 60 * 24 * 7);
+    return {
+      isAvailable: false,
+      message: "Username is already taken",
+    };
+  }
+
+  logger.info(`Username ${username} is available`);
+  await redis.set(`user:username:${username}`, "available", "EX", 60 * 60 * 24 * 7);
+  return {
+    isAvailable: true,
+    message: "Username is available",
   };
 };

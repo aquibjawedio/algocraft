@@ -26,6 +26,7 @@ type AuthStore = {
   loginUser: (formData: LoginFormDTO) => void;
   logoutUser: () => void;
   fetchUserProfile: () => void;
+  checkUsernameAvailability: (username: string) => void;
 };
 
 const useAuthStore = create<AuthStore>((set, get) => ({
@@ -183,6 +184,21 @@ const useAuthStore = create<AuthStore>((set, get) => ({
       stopLoading();
       clearError();
       clearSuccess();
+    }
+  },
+
+  checkUsernameAvailability: async (username: string) => {
+    const { startLoading, stopLoading, handleError, clearError } = get();
+    try {
+      startLoading();
+      const response = await axiosClient.get(`/auth/${username}`);
+      clearError();
+      return response.data.data.isAvailable;
+    } catch (error) {
+      handleError(error as ApiError, "Failed to check username availability");
+      return false;
+    } finally {
+      stopLoading();
     }
   },
 }));

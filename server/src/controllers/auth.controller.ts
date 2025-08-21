@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 import {
+  checkUsernameAvailabilitySchema,
   loginSchema,
   logoutSchema,
   refreshTokenSchema,
@@ -9,6 +10,7 @@ import {
   verifyEmailSchema,
 } from "../schemas/auth.schema.js";
 import {
+  checkUsernameAvailabilityService,
   loginService,
   logoutService,
   refreshAccessTokenService,
@@ -16,8 +18,6 @@ import {
   verifyEmailService,
 } from "../services/auth.service.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { createCryptoHash } from "../utils/helper.js";
-import { prisma } from "../config/prisma.js";
 
 export const registerController = asyncHandler(async (req: Request, res: Response) => {
   const { data } = registerSchema.safeParse(req.body);
@@ -79,20 +79,16 @@ export const refreshAccessTokenController = asyncHandler(async (req: Request, re
   });
 
   if (!data?.refreshToken) {
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
     return res.status(400).json(new ApiResponse(400, "Refresh token is required"));
   }
-
-  const session = await prisma.session.findUnique({
-    where: {
-      refreshToken: createCryptoHash(data.refreshToken),
-    },
-  });
 
   const ipAddress = req.ip;
   const userAgent = req.headers["user-agent"];
 
   const { user, accessToken, refreshToken, accessTokenOptions, refreshTokenOptions } =
-    await refreshAccessTokenService(data, ipAddress, userAgent);
+    await refreshAccessTokenService(data, ipAddress, userAgent, res);
 
   return res
     .status(200)
@@ -100,3 +96,17 @@ export const refreshAccessTokenController = asyncHandler(async (req: Request, re
     .cookie("refreshToken", refreshToken, refreshTokenOptions)
     .json(new ApiResponse(200, "Access token refreshed successfully", { user }));
 });
+
+export const checkUsernameAvailabilityController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { data } = checkUsernameAvailabilitySchema.safeParse({
+      username: req.params.username,
+    });
+
+    const result = await checkUsernameAvailabilityService(data);
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Username availability checked successfully", result));
+  }
+);

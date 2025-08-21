@@ -25,9 +25,14 @@ export const refreshTokenSchema = z.object({
   refreshToken: z.string().trim().min(1, "Refresh token is required"),
 });
 
+export const checkUsernameAvailabilitySchema = z.object({
+  username: z.string().trim().min(5, "Username must be at least 5 characters long"),
+});
+
 // Infer the type from the schema
 export type RegisterSchemaDTO = z.infer<typeof registerSchema>;
 export type VerifyEmailSchemaDTO = z.infer<typeof verifyEmailSchema>;
 export type LoginSchemaDTO = z.infer<typeof loginSchema>;
 export type RefreshTokenSchemaDTO = z.infer<typeof refreshTokenSchema>;
 export type LogoutSchemaDTO = z.infer<typeof logoutSchema>;
+export type CheckUsernameAvailabilitySchemaDTO = z.infer<typeof checkUsernameAvailabilitySchema>;

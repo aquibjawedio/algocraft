@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
@@ -14,8 +14,13 @@ import SpinLoader from "@/components/shared/SpinLoader";
 
 const RegisterForm = () => {
   const [hidePassword, setHidePassword] = useState(true);
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState<
+    boolean | null
+  >(null);
 
-  const { registerUser } = useAuthStore();
+  const [usernameValue, setUsernameValue] = useState("");
+
+  const { registerUser, checkUsernameAvailability, isLoading } = useAuthStore();
 
   const {
     register,
@@ -25,6 +30,15 @@ const RegisterForm = () => {
 
   const onSubmit = async (formData: RegisterFormDTO) => {
     await registerUser(formData);
+  };
+
+  const handleUsernameChange = async () => {
+    if (usernameValue && usernameValue.length >= 5) {
+      const data = await checkUsernameAvailability(usernameValue);
+      setIsUsernameAvailable(Boolean(data));
+    } else {
+      setIsUsernameAvailable(false);
+    }
   };
 
   return (
@@ -56,18 +70,48 @@ const RegisterForm = () => {
             </div>
 
             <div className="grid gap-3">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                type="username"
-                {...register("username")}
-                placeholder="Enter your username"
-                required
-              />
+              <div className="flex items-center">
+                <Label htmlFor="username">Username</Label>
+              </div>
+
+              <div className="relative">
+                <Input
+                  id="username"
+                  type="username"
+                  {...register("username")}
+                  placeholder="Enter your username"
+                  required
+                  onChange={(e) => {
+                    setUsernameValue(e.target.value);
+                    setIsUsernameAvailable(false);
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={handleUsernameChange}
+                  className="absolute right-0  top-1/2 -translate-y-1/2 cursor-pointer hover:bg-transparent bg-transparent"
+                >
+                  <RefreshCw
+                    className={`w-5 h-5 ${isLoading ? "animate-spin" : ""}`}
+                  />
+                </Button>
+              </div>
               {errors.username && (
                 <p className="text-red-600 text-sm">
                   {errors.username.message}
                 </p>
+              )}
+              {isUsernameAvailable === false ? (
+                <p className="text-red-600 text-sm">
+                  Username is already taken
+                </p>
+              ) : (
+                isUsernameAvailable === true && (
+                  <p className="text-green-600 text-sm">
+                    Username is available
+                  </p>
+                )
               )}
             </div>
 
@@ -122,7 +166,7 @@ const RegisterForm = () => {
             <Button
               type="submit"
               className="w-full cursor-pointer"
-              disabled={isSubmitting || isSubmitted}
+              disabled={isSubmitting || isSubmitted || !isUsernameAvailable}
             >
               {isSubmitting ? (
                 <SpinLoader />
