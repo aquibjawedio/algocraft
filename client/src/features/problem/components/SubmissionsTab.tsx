@@ -10,10 +10,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Check, XCircle, Clock, Zap } from "lucide-react";
+import { Check, XCircle, Clock, Zap, Database } from "lucide-react";
 import CodeBlock from "@/components/shared/CodeBlock";
 import { useAuthStore } from "@/stores/authStore";
 import { Button } from "@/components/ui/button";
+import TimeAndSpaceDialog from "./TimeAndSpaceDialog";
 
 const SubmissionsTab = () => {
   const navigate = useNavigate();
@@ -139,6 +140,31 @@ const SubmissionsTab = () => {
                 code={sub.code}
                 language={sub.language.toLowerCase()}
               />
+
+              {sub.status === "ACCEPTED" && (
+                <div className="mt-4 p-3 rounded-xl bg-background text-foreground">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                      ⚡ Time & Space Complexity
+                    </h4>
+
+                    <TimeAndSpaceDialog submissionId={sub.id} />
+                  </div>
+
+                  <div className="space-y-2 text-sm ">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-[#948979]" />
+                      <span className="font-bold">Time:</span>
+                      <span className="font-mono">{sub.complexity.time}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Database className="w-4 h-4 text-[#948979]" />
+                      <span className="font-bold">Space:</span>
+                      <span className="font-mono">{sub.complexity.space}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {sub.firstFailedInput && (
                 <div>

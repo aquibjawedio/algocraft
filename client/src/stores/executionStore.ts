@@ -16,6 +16,7 @@ type ExecutionStore = {
   submission: SubmissionDTO | null;
   executing: boolean;
   isLoading: boolean;
+  isFetching: boolean;
   error: string | null;
   success: string | null;
   startLoading: () => void;
@@ -35,6 +36,9 @@ type ExecutionStore = {
     language: string
   ) => void | Promise<void>;
   getAllSubmissions: (slug: string) => void | Promise<void>;
+  computeTimeAndSpaceComplexity: (
+    submissionId: string
+  ) => void | Promise<{ time: string; space: string }>;
 };
 
 const useExecutionStore = create<ExecutionStore>((set, get) => ({
@@ -43,6 +47,7 @@ const useExecutionStore = create<ExecutionStore>((set, get) => ({
   submission: null,
   executing: false,
   isLoading: false,
+  isFetching: false,
   error: null,
   success: null,
 
@@ -112,6 +117,32 @@ const useExecutionStore = create<ExecutionStore>((set, get) => ({
       handleError(error as ApiError, "Failed to fetch submissions");
     } finally {
       stopLoading();
+    }
+  },
+
+  computeTimeAndSpaceComplexity: async (submissionId: string) => {
+    const { stopLoading, handleError } = get();
+    try {
+      set({ isFetching: true });
+      const response = await axiosClient.patch(`/execution/complexity`, {
+        submissionId,
+      });
+      const updatedSubmission = response.data.data.submission;
+      const complexity = response.data.data.complexity;
+      const filtredSubmissions = (get().submissions || []).map((sub) =>
+        sub.id === updatedSubmission.id ? { ...sub, complexity } : sub
+      );
+      set({
+        submission: updatedSubmission,
+        submissions: filtredSubmissions,
+        error: null,
+      });
+      return complexity;
+    } catch (error) {
+      handleError(error as ApiError, "Failed to compute complexity");
+    } finally {
+      stopLoading();
+      set({ isFetching: false });
     }
   },
 }));

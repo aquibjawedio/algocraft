@@ -18,5 +18,11 @@ export const submitCodeSchema = z.object({
   userId: z.string().min(1, "User ID is required"),
 });
 
+export const calculateTimeAndSpaceSchema = z.object({
+  submissionId: z.string().min(1, "Submission ID is required"),
+  userId: z.string().min(1, "User ID is required"),
+});
+
 export type RunCodeDTO = z.infer<typeof runCodeSchema>;
 export type SubmitCodeDTO = z.infer<typeof submitCodeSchema>;
+export type CalculateTimeAndSpaceDTO = z.infer<typeof calculateTimeAndSpaceSchema>;

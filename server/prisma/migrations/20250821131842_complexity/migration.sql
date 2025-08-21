@@ -152,6 +152,7 @@ CREATE TABLE "public"."Submission" (
     "language" "public"."LanguageEnum" NOT NULL DEFAULT 'JAVASCRIPT',
     "status" "public"."StatusEnum" NOT NULL DEFAULT 'PENDING',
     "code" TEXT NOT NULL,
+    "complexity" JSONB,
     "passedTestCases" INTEGER NOT NULL DEFAULT 0,
     "totalTestCases" INTEGER NOT NULL DEFAULT 0,
     "averageTime" DOUBLE PRECISION NOT NULL DEFAULT 0.0,

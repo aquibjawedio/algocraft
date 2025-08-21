@@ -1,9 +1,14 @@
 import { prisma } from "../config/prisma.js";
-import { RunCodeDTO, SubmitCodeDTO } from "../schemas/execution.schema.js";
+import {
+  CalculateTimeAndSpaceDTO,
+  RunCodeDTO,
+  SubmitCodeDTO,
+} from "../schemas/execution.schema.js";
 import { ApiError } from "../utils/ApiError.js";
 import { logger } from "../utils/logger.js";
 import { validateUserSolution } from "../utils/validateSolution.js";
-import { LanguageEnum, StatusEnum } from "../generated/prisma/index.js";
+import { StatusEnum } from "../generated/prisma/index.js";
+import { geminiClient } from "../config/geminiClient.js";
 
 export const runCodeService = async ({ slug, code, language }: RunCodeDTO) => {
   logger.info(`Attemp To Run Code : Running code for slug: ${slug}, language: ${language}`);
@@ -161,4 +166,76 @@ export const submitCodeService = async ({ slug, code, language, userId }: Submit
   logger.info(`Code submitted successfully for slug: ${slug}`);
 
   return userSubmission;
+};
+
+export const calculateTimeAndSpaceService = async ({
+  submissionId,
+  userId,
+}: CalculateTimeAndSpaceDTO) => {
+  logger.info(
+    `Attempt To Calculate Time and Space : Calculating for submissionId - ${submissionId}`
+  );
+
+  const submission = await prisma.submission.findUnique({
+    where: {
+      id: submissionId,
+      userId,
+    },
+  });
+
+  if (!submission) {
+    logger.error(
+      `Failed To Calculate Time and Space : Submission not found for ID: ${submissionId}`
+    );
+    throw new ApiError(404, "Submission not found");
+  }
+
+  if (submission.status !== StatusEnum.ACCEPTED) {
+    logger.error(`Failed To Calculate Time and Space : Submission is not accepted`);
+    throw new ApiError(400, "Submission is not accepted");
+  }
+
+  const data = {
+    language: submission.language,
+    code: submission.code,
+  };
+
+  const response = await geminiClient.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: [
+      {
+        text: `Calculate the time and space complexity of the following code in ${data.language}:\n\n${data.code} and give the result in JSON format with keys like this \n\n {"time": "O(something)", "space": "O(something)"}\n\n and do not include any other text or explanation I can parse easily.`,
+      },
+    ],
+  });
+  if (!response) {
+    logger.error(`Failed To Calculate Time and Space : Gemini response is empty`);
+    throw new ApiError(500, "Failed to calculate time and space complexity");
+  }
+
+  const responseText = response.candidates[0]?.content?.parts?.[0]?.text;
+  const jsonString = responseText.replace(/```json|```/g, "").trim();
+  let complexity: { time: string; space: string };
+  try {
+    complexity = JSON.parse(jsonString);
+  } catch (error) {
+    logger.error(`Failed To Parse Gemini Response : ${error}`);
+    throw new ApiError(500, "Failed to parse Gemini response");
+  }
+
+  console.log(`Gemini response: ${JSON.stringify(complexity)}`);
+
+  const updatedSubmission = await prisma.submission.update({
+    where: {
+      id: submissionId,
+    },
+    data: {
+      complexity: {
+        time: complexity.time,
+        space: complexity.space,
+      },
+    },
+  });
+
+  return { complexity, submission: updatedSubmission };
 };

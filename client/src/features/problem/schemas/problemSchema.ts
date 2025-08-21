@@ -90,6 +90,10 @@ export type SubmissionDTO = {
   language: string;
   status: string;
   code: string;
+  complexity: {
+    time: string;
+    space: string;
+  };
   passedTestCases: number;
   totalTestCases: number;
   averageTime: number;

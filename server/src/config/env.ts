@@ -25,6 +25,7 @@ interface EnvConfigDTO {
   SENDER_EMAIL: string;
 
   JUDGE0_API_URL: string;
+  GEMINI_API_KEY: string;
 }
 
 const env: EnvConfigDTO = {
@@ -51,6 +52,7 @@ const env: EnvConfigDTO = {
   SENDER_EMAIL: process.env.SENDER_EMAIL || "",
 
   JUDGE0_API_URL: process.env.JUDGE0_API_URL || "",
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY || "",
 };
 
 export { env };

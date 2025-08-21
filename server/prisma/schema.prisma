@@ -184,6 +184,7 @@ model Submission {
   language          LanguageEnum @default(JAVASCRIPT)
   status            StatusEnum   @default(PENDING)
   code              String
+  complexity        Json?
   passedTestCases   Int          @default(0)
   totalTestCases    Int          @default(0)
   averageTime       Float        @default(0.0)
