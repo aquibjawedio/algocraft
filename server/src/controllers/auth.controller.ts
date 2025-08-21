@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler.js";
+
 import {
   loginSchema,
   logoutSchema,
@@ -15,6 +16,8 @@ import {
   verifyEmailService,
 } from "../services/auth.service.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { createCryptoHash } from "../utils/helper.js";
+import { prisma } from "../config/prisma.js";
 
 export const registerController = asyncHandler(async (req: Request, res: Response) => {
   const { data } = registerSchema.safeParse(req.body);
@@ -31,8 +34,10 @@ export const loginController = asyncHandler(async (req: Request, res: Response) 
 
   const { data } = loginSchema.safeParse(req.body);
 
+  const ipAddress = req.ip;
+  const userAgent = req.headers["user-agent"];
   const { user, accessToken, refreshToken, accessTokenOptions, refreshTokenOptions } =
-    await loginService(data);
+    await loginService(data, ipAddress, userAgent);
 
   return res
     .status(200)
@@ -77,8 +82,17 @@ export const refreshAccessTokenController = asyncHandler(async (req: Request, re
     return res.status(400).json(new ApiResponse(400, "Refresh token is required"));
   }
 
+  const session = await prisma.session.findUnique({
+    where: {
+      refreshToken: createCryptoHash(data.refreshToken),
+    },
+  });
+
+  const ipAddress = req.ip;
+  const userAgent = req.headers["user-agent"];
+
   const { user, accessToken, refreshToken, accessTokenOptions, refreshTokenOptions } =
-    await refreshAccessTokenService(data);
+    await refreshAccessTokenService(data, ipAddress, userAgent);
 
   return res
     .status(200)

@@ -11,15 +11,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import MonacoEditor from "../components/MonacoEditor";
 import { useEffect, useState, useMemo } from "react";
 import { useProblemStore } from "@/stores/problemStore";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import SpinLoader from "@/components/shared/SpinLoader";
 import { useExecutionStore } from "@/stores/executionStore";
 import {
   BookOpenText,
   CodeXml,
   GalleryHorizontalEnd,
-  MessagesSquare,
   SquareCode,
+  StickyNote,
 } from "lucide-react";
 import {
   Select,
@@ -30,7 +30,10 @@ import {
 } from "@/components/ui/select";
 import ProblemNavbar from "../components/ProblemNavbar";
 import DescriptionTab from "../components/DescriptionTab";
-import SubmissionTab from "../components/SubmissionTab";
+import NotesTab from "../components/NotesTab";
+import SubmissionsTab from "../components/SubmissionsTab";
+import SolutionsTab from "../components/SolutionsTab";
+import { useAuthStore } from "@/stores/authStore";
 
 const TabListControl = [
   {
@@ -49,19 +52,20 @@ const TabListControl = [
     icon: <SquareCode className="w-4 h-4" />,
   },
   {
-    value: "discussions",
-    label: "Discussions",
-    icon: <MessagesSquare className="w-4 h-4" />,
+    value: "notes",
+    label: "Notes",
+    icon: <StickyNote className="w-4 h-4" />,
   },
 ];
 
 const ProblemPage = () => {
   const [code, setCode] = useState("// Write your solution here...");
   const [language, setLanguage] = useState("JAVASCRIPT");
+  const navigate = useNavigate();
 
+  const { isAuthenticated } = useAuthStore();
   const { problem, isLoading, getProblemBySlug } = useProblemStore();
-  const { runCode, testResults, executing, submission, submitCode } =
-    useExecutionStore();
+  const { runCode, testResults, executing, submitCode } = useExecutionStore();
   const { slug } = useParams<{ slug: string }>();
 
   useEffect(() => {
@@ -118,8 +122,6 @@ const ProblemPage = () => {
     );
   }
 
-  console.log("Submimssion Data:", submission);
-
   return (
     <>
       <div className="w-screen h-screen bg-[#0E0E0E] text-white overflow-hidden">
@@ -167,27 +169,21 @@ const ProblemPage = () => {
                 value="submissions"
                 className="flex flex-col flex-1 min-h-0"
               >
-                <SubmissionTab />
+                <SubmissionsTab />
               </TabsContent>
 
               <TabsContent
                 value="solutions"
                 className="flex flex-col flex-1 min-h-0"
               >
-                <ScrollArea className="flex-1 min-h-0 px-6 py-4">
-                  <p className="text-muted-foreground">
-                    No community solutions available.
-                  </p>
-                </ScrollArea>
+                <SolutionsTab />
               </TabsContent>
 
               <TabsContent
-                value="discussions"
+                value="notes"
                 className="flex flex-col flex-1 min-h-0"
               >
-                <ScrollArea className="flex-1 min-h-0 px-6 py-4">
-                  <p className="text-muted-foreground">No submissions yet.</p>
-                </ScrollArea>
+                <NotesTab />
               </TabsContent>
             </Tabs>
           </ResizablePanel>
@@ -238,6 +234,20 @@ const ProblemPage = () => {
                     language={language.toLowerCase()}
                   />
                 </div>
+                {!isAuthenticated && (
+                  <div className="bg-muted/20 text-muted-foreground p-1 flex items-center">
+                    <p className="text-sm">
+                      Please login to run or submit code.
+                    </p>
+                    <button
+                      type="button"
+                      className="hover:bg-transparent text-sm cursor-pointer shadow-none bg-transparent ml-2 text-[#e6c200]"
+                      onClick={() => navigate("/auth/login")}
+                    >
+                      Login
+                    </button>
+                  </div>
+                )}
               </ResizablePanel>
 
               <ResizableHandle className="bg-[#1A1A1A]" withHandle />

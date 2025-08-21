@@ -39,6 +39,23 @@ CREATE TABLE "public"."User" (
 );
 
 -- CreateTable
+CREATE TABLE "public"."Session" (
+    "id" TEXT NOT NULL,
+    "ipAddress" TEXT,
+    "userAgent" TEXT,
+    "deviceType" TEXT,
+    "browser" TEXT,
+    "os" TEXT,
+    "userId" TEXT NOT NULL,
+    "refreshToken" TEXT,
+    "isValid" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "public"."Problem" (
     "id" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
@@ -164,6 +181,32 @@ CREATE TABLE "public"."SolvedProblem" (
 );
 
 -- CreateTable
+CREATE TABLE "public"."Note" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "problemId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Note_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."Sheet" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "userId" TEXT NOT NULL,
+    "problemId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Sheet_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "public"."_ProblemTags" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL,
@@ -195,6 +238,12 @@ CREATE UNIQUE INDEX "User_forgotPasswordToken_key" ON "public"."User"("forgotPas
 CREATE UNIQUE INDEX "User_refreshToken_key" ON "public"."User"("refreshToken");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Session_refreshToken_key" ON "public"."Session"("refreshToken");
+
+-- CreateIndex
+CREATE INDEX "Session_userId_idx" ON "public"."Session"("userId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Problem_slug_key" ON "public"."Problem"("slug");
 
 -- CreateIndex
@@ -216,10 +265,22 @@ CREATE INDEX "Submission_problemId_idx" ON "public"."Submission"("problemId");
 CREATE UNIQUE INDEX "SolvedProblem_userId_problemId_key" ON "public"."SolvedProblem"("userId", "problemId");
 
 -- CreateIndex
+CREATE INDEX "Note_userId_idx" ON "public"."Note"("userId");
+
+-- CreateIndex
+CREATE INDEX "Note_problemId_idx" ON "public"."Note"("problemId");
+
+-- CreateIndex
+CREATE INDEX "Sheet_userId_idx" ON "public"."Sheet"("userId");
+
+-- CreateIndex
 CREATE INDEX "_ProblemTags_B_index" ON "public"."_ProblemTags"("B");
 
 -- CreateIndex
 CREATE INDEX "_CompanyProblems_B_index" ON "public"."_CompanyProblems"("B");
+
+-- AddForeignKey
+ALTER TABLE "public"."Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."Problem" ADD CONSTRAINT "Problem_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "public"."User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -247,6 +308,18 @@ ALTER TABLE "public"."SolvedProblem" ADD CONSTRAINT "SolvedProblem_problemId_fke
 
 -- AddForeignKey
 ALTER TABLE "public"."SolvedProblem" ADD CONSTRAINT "SolvedProblem_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Note" ADD CONSTRAINT "Note_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Note" ADD CONSTRAINT "Note_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "public"."Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Sheet" ADD CONSTRAINT "Sheet_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Sheet" ADD CONSTRAINT "Sheet_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "public"."Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."_ProblemTags" ADD CONSTRAINT "_ProblemTags_A_fkey" FOREIGN KEY ("A") REFERENCES "public"."Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -1,3 +1,4 @@
+import { IBrowser, UAParser } from "ua-parser-js";
 import { clearCookieOptions, cookieOptions } from "../config/cookie.js";
 import { env } from "../config/env.js";
 import { prisma } from "../config/prisma.js";
@@ -138,7 +139,11 @@ export const verifyEmailService = async ({ token }: VerifyEmailSchemaDTO) => {
   return sanitizeUser(updatedUser);
 };
 
-export const loginService = async ({ email, password }: LoginSchemaDTO) => {
+export const loginService = async (
+  { email, password }: LoginSchemaDTO,
+  ipAddress: string,
+  userAgent: string
+) => {
   logger.info(`Attempt To Login User : Finding user with email - ${email}`);
 
   const user = await prisma.user.findUnique({
@@ -180,17 +185,25 @@ export const loginService = async ({ email, password }: LoginSchemaDTO) => {
 
   const hashedRefreshToken = createCryptoHash(refreshToken);
 
-  const updatedUser = await prisma.user.update({
-    where: { id: user.id },
+  const ua = UAParser(userAgent);
+
+  const session = await prisma.session.create({
     data: {
+      userId: user.id,
+      ipAddress,
+      userAgent,
       refreshToken: hashedRefreshToken,
+      isValid: true,
+      browser: ua.browser.name,
+      deviceType: ua.device.type,
+      os: ua.os.name,
     },
   });
 
-  logger.info(`User logged in successfully. User ID: ${updatedUser.id}`);
+  logger.info(`User logged in successfully. User ID: ${user.id}`);
 
   return {
-    user: sanitizeUser(updatedUser),
+    user: sanitizeUser(user),
     accessToken,
     refreshToken,
     accessTokenOptions,
@@ -203,44 +216,73 @@ export const logoutService = async ({ accessToken, refreshToken }: LogoutSchemaD
 
   const hashedRefreshToken = createCryptoHash(refreshToken);
 
-  const user = await prisma.user.findUnique({
+  const session = await prisma.session.findUnique({
     where: {
       refreshToken: hashedRefreshToken,
     },
   });
 
-  if (!user) {
-    logger.error(`Logout Failed : User not found with refreshToken - ${refreshToken}`);
-    throw new ApiError(404, "User not found! Please login first.");
+  if (!session) {
+    logger.error(`Logout Failed : Session not found with refreshToken - ${refreshToken}`);
+    throw new ApiError(404, "Session not found! Please login first.");
   }
 
-  logger.info(`User found with ID: ${user.id}. Proceeding to logout.`);
-  await prisma.user.update({
-    where: { id: user.id },
+  if (!session.isValid) {
+    logger.warn(`Logout Failed : Session is already invalid for refreshToken - ${refreshToken}`);
+    throw new ApiError(400, "Session is already invalid! Please login again.");
+  }
+
+  await prisma.session.update({
+    where: { id: session.id },
     data: {
+      isValid: false,
       refreshToken: null,
     },
   });
 
-  logger.info(`User logged out successfully. User ID: ${user.id}`);
+  logger.info(`User logged out successfully. User ID: ${session.userId}`);
   const cookieOptions = clearCookieOptions();
   return cookieOptions;
 };
 
-export const refreshAccessTokenService = async ({ refreshToken }: RefreshTokenSchemaDTO) => {
+export const refreshAccessTokenService = async (
+  { refreshToken }: RefreshTokenSchemaDTO,
+  ipAddress: string,
+  userAgent: string,
+) => {
   logger.info(`Attempt To Refresh Access Token : Verifying refreshToken - ${refreshToken}`);
 
   const hashedRefreshToken = createCryptoHash(refreshToken);
 
-  const user = await prisma.user.findUnique({
+  const session = await prisma.session.findUnique({
     where: {
       refreshToken: hashedRefreshToken,
     },
   });
 
+  if (!session) {
+    logger.error(
+      `Refresh Access Token Failed : Session not found with refreshToken - ${refreshToken}`
+    );
+    throw new ApiError(404, "Session not found! Please login first.");
+  }
+
+  if (!session.isValid) {
+    logger.warn(
+      `Refresh Access Token Failed : Session is invalid for refreshToken - ${refreshToken}`
+    );
+    throw new ApiError(400, "Session is invalid! Please login again.");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: session.userId,
+    },
+  });
+
   if (!user) {
-    logger.error(`Refresh Token Failed : User not found with refreshToken - ${refreshToken}`);
-    throw new ApiError(404, "User not found! Please login first.");
+    logger.error(`Refresh Access Token Failed : User not found with ID - ${session.userId}`);
+    throw new ApiError(404, "User not found! Please register first.");
   }
 
   const accessTokenOptions = cookieOptions(15);
@@ -259,19 +301,26 @@ export const refreshAccessTokenService = async ({ refreshToken }: RefreshTokenSc
 
   const hashedNewRefreshToken = createCryptoHash(newRefreshToken);
 
-  const updatedUser = await prisma.user.update({
-    where: { id: user.id },
+  const ua = UAParser(userAgent);
+
+  const updatedSession = await prisma.session.update({
+    where: { id: session.id },
     data: {
       refreshToken: hashedNewRefreshToken,
+      ipAddress,
+      userAgent,
+      browser: ua.browser.name,
+      deviceType: ua.device.type,
+      os: ua.os.name,
     },
   });
 
-  logger.info(`Access token refreshed successfully for user ID: ${updatedUser.id}`);
+  logger.info(`Access token refreshed successfully for user ID: ${user.id}`);
   return {
     accessToken,
     refreshToken: newRefreshToken,
     accessTokenOptions,
     refreshTokenOptions,
-    user: sanitizeUser(updatedUser),
+    user: sanitizeUser(user),
   };
 };

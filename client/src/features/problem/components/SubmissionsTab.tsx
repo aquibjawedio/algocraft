@@ -2,7 +2,7 @@ import SpinLoader from "@/components/shared/SpinLoader";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useExecutionStore } from "@/stores/executionStore";
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import {
   Accordion,
@@ -12,9 +12,14 @@ import {
 } from "@/components/ui/accordion";
 import { Check, XCircle, Clock, Zap } from "lucide-react";
 import CodeBlock from "@/components/shared/CodeBlock";
+import { useAuthStore } from "@/stores/authStore";
+import { Button } from "@/components/ui/button";
 
-const SubmissionTab = () => {
+const SubmissionsTab = () => {
+  const navigate = useNavigate();
+
   const { getAllSubmissions, submissions, isLoading } = useExecutionStore();
+  const { isAuthenticated } = useAuthStore();
   const { slug } = useParams<{ slug: string }>();
 
   useEffect(() => {
@@ -31,11 +36,32 @@ const SubmissionTab = () => {
     );
   }
 
+  if (!isAuthenticated) {
+    return (
+      <ScrollArea className="flex-1 min-h-0 px-6 py-4">
+        <div className="flex flex-col items-center justify-center">
+          <p className="text-muted-foreground">
+            You need to be logged in to view submissions.
+          </p>
+          <Button
+            variant="outline"
+            className="mt-4 px-8 cursor-pointer"
+            onClick={() => navigate("/auth/login")}
+          >
+            Log In
+          </Button>
+        </div>
+      </ScrollArea>
+    );
+  }
+
   if (!submissions || submissions.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-muted-foreground">No submissions yet.</p>
-      </div>
+      <ScrollArea className="flex-1 min-h-0 px-6 py-4">
+        <div className="flex items-center justify-center h-full">
+          <p className="text-muted-foreground">No submissions available.</p>
+        </div>
+      </ScrollArea>
     );
   }
 
@@ -48,7 +74,6 @@ const SubmissionTab = () => {
             value={sub.id.toString()}
             className="border-b border-border/20"
           >
-
             <AccordionTrigger className="hover:no-underline px-2 py-3 rounded-lg data-[state=open]:bg-card/40 transition-colors cursor-pointer">
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center gap-3">
@@ -100,7 +125,6 @@ const SubmissionTab = () => {
                 </div>
               </div>
 
-
               <div className="mb-4">
                 <h4 className="text-sm font-semibold text-white mb-2">
                   Percentiles
@@ -137,4 +161,4 @@ const SubmissionTab = () => {
   );
 };
 
-export default SubmissionTab;
+export default SubmissionsTab;

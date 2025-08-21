@@ -25,6 +25,7 @@
     "mailgen": "^2.0.29",
     "nodemailer": "^7.0.5",
     "resend": "^6.0.1",
+    "ua-parser-js": "^2.0.4",
     "winston": "^3.17.0",
     "zod": "^4.0.16"
   },
