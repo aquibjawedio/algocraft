@@ -141,7 +141,7 @@ const SubmissionsTab = () => {
                 language={sub.language.toLowerCase()}
               />
 
-              {sub.status === "ACCEPTED" && (
+              {sub.status === "ACCEPTED" &&  (
                 <div className="mt-4 p-3 rounded-xl bg-background text-foreground">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
@@ -155,12 +155,12 @@ const SubmissionsTab = () => {
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-[#948979]" />
                       <span className="font-bold">Time:</span>
-                      <span className="font-mono">{sub.complexity.time}</span>
+                      <span className="font-mono">{sub.complexity?.time || "NA"}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Database className="w-4 h-4 text-[#948979]" />
                       <span className="font-bold">Space:</span>
-                      <span className="font-mono">{sub.complexity.space}</span>
+                      <span className="font-mono">{sub.complexity?.space || "NA"}</span>
                     </div>
                   </div>
                 </div>
