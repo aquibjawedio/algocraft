@@ -7,6 +7,8 @@ import ProblemPage from "@/features/problem/pages/ProblemPage";
 import ProblemsTablePage from "@/features/problem/pages/ProblemsTablePage";
 import ProfilePage from "@/features/user/pages/ProfilePage";
 import Layout from "@/layout/Layout";
+import AboutPage from "@/pages/AboutPage";
+import ContactPage from "@/pages/ContactPage";
 import LandingPage from "@/pages/LandingPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import { useAuthStore } from "@/stores/authStore";
@@ -35,6 +37,8 @@ const AppRouter = () => {
           <Route path="/auth/forgot" element={<ForgotPasswordPage />} />
           <Route path={`/profile`} element={<ProfilePage />} />
           <Route path="/problems" element={<ProblemsTablePage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/about" element={<AboutPage />} />
         </Route>
         <Route path="/problems/:slug" element={<ProblemPage />} />
         // Email Verification and Password Reset

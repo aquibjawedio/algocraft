@@ -263,14 +263,14 @@ const ProblemPage = () => {
                     {hasTestResults ? (
                       <Tabs
                         defaultValue="test1"
-                        className="flex flex-col h-full min-h-0 bg-background"
+                        className="flex flex-col h-full min-h-0"
                       >
-                        <TabsList className="text-sm data-[state=active]:bg-accent-foreground/10 data-[state=active]:text-forground data-[state=active]:border-card rounded-md cursor-pointer">
+                        <TabsList className="mb-2 shrink-0 bg-background border-border border rounded-md">
                           {testResults?.map((_, i) => (
                             <TabsTrigger
                               key={i}
                               value={`test${i + 1}`}
-                              className="text-sm  data-[state=active]:shadow-sm rounded-md data-[state=active]:bg-accent-foreground/10 data-[state=active]:text-forground data-[state=active]:border-card cursor-pointer"
+                              className="text-sm  data-[state=active]:shadow-sm rounded-md data-[state=active]:bg-background/20 data-[state=active]:text-forground data-[state=active]:border-card cursor-pointer"
                             >
                               Test {executing ? <SpinLoader /> : i + 1}
                             </TabsTrigger>
@@ -285,7 +285,7 @@ const ProblemPage = () => {
                                 <TabsContent
                                   key={i}
                                   value={`test${i + 1}`}
-                                  className="rounded-md bg-card border border-border/30 p-3 "
+                                  className="rounded-md bg-background/20 border border-border/30 p-3 "
                                 >
                                   <section>
                                     <p className="text-xs font-semibold text-muted-foreground uppercase mb-1 ">
@@ -333,7 +333,7 @@ const ProblemPage = () => {
                             <TabsTrigger
                               key={i}
                               value={`test${i + 1}`}
-                              className="text-sm data-[state=active]:bg-accent-foreground/10 data-[state=active]:text-forground data-[state=active]:border-card rounded-md cursor-pointer"
+                              className="text-sm data-[state=active]:bg-background/10 data-[state=active]:text-forground data-[state=active]:border-card rounded-md cursor-pointer"
                             >
                               Test {executing ? <SpinLoader /> : i + 1}
                             </TabsTrigger>
@@ -345,7 +345,7 @@ const ProblemPage = () => {
                               <TabsContent
                                 key={i}
                                 value={`test${i + 1}`}
-                                className="p-3 rounded-md bg-card border border-border/30 space-y-4"
+                                className="p-3 rounded-md bg-background/20 border border-border/30 space-y-4"
                               >
                                 <section>
                                   <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">

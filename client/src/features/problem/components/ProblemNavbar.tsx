@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ChevronLeft, Play, CloudUpload } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ProfileDropdown from "@/components/shared/ProfileDropdown";
 
 interface ProblemNavbarProps {
   onRun: () => void;
@@ -48,6 +49,7 @@ const ProblemNavbar = ({
       </div>
 
       <div />
+      <ProfileDropdown />
     </div>
   );
 };

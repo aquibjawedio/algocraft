@@ -37,7 +37,7 @@ const RegisterForm = () => {
       const data = await checkUsernameAvailability(usernameValue);
       setIsUsernameAvailable(Boolean(data));
     } else {
-      setIsUsernameAvailable(false);
+      setIsUsernameAvailable(null);
     }
   };
 
@@ -83,7 +83,7 @@ const RegisterForm = () => {
                   required
                   onChange={(e) => {
                     setUsernameValue(e.target.value);
-                    setIsUsernameAvailable(false);
+                    setIsUsernameAvailable(null);
                   }}
                 />
                 <Button

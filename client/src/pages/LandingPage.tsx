@@ -3,7 +3,7 @@ import HeroSection from "@/components/shared/HeroSection";
 
 const LandingPage = () => {
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans relative overflow-hidden">
+    <div className="bg-background text-foreground font-sans relative overflow-hidden">
       <HeroSection />
       <Footer />
     </div>

@@ -18,8 +18,8 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen py-4">
-      <Card className="w-full bg-card/70 backdrop-blur-md shadow-lg rounded-xl border border-border">
+    <div className="min-h-screen p-4">
+      <Card className="w-full bg-background/20 backdrop-blur-md shadow-lg rounded-xl border border-border">
         <CardHeader className="flex flex-col sm:flex-row sm:items-center gap-6">
           <Avatar className="w-24 h-24 border-2 border-primary">
             <AvatarImage src={`${user.avatarUrl}`} alt={user.fullname} />
