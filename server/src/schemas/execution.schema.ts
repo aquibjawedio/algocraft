@@ -1,6 +1,5 @@
+import { LanguageEnum } from "@prisma/client";
 import { z } from "zod";
-
-import { LanguageEnum } from "../generated/prisma/index.js";
 
 const languageEnums = z.enum(Object.values(LanguageEnum));
 

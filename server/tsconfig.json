@@ -2,9 +2,15 @@
   "compilerOptions": {
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "target": "es2022",
+    "target": "ES2022",
     "sourceMap": true,
-    "outDir": "dist"
+    "outDir": "dist",
+
+    "types": ["node"],
+    "skipLibCheck": true
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*",
+    "prisma.config.ts"
+  ]
 }

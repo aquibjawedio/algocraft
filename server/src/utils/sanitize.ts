@@ -1,4 +1,5 @@
-import { User } from "../generated/prisma/index.js";
+import { User } from "@prisma/client";
+
 
 export const sanitizeUser = ({
   id,

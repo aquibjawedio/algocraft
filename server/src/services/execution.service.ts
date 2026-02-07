@@ -7,8 +7,9 @@ import {
 import { ApiError } from "../utils/ApiError.js";
 import { logger } from "../utils/logger.js";
 import { validateUserSolution } from "../utils/validateSolution.js";
-import { StatusEnum } from "../generated/prisma/index.js";
+
 import { geminiClient } from "../config/geminiClient.js";
+import { StatusEnum } from "@prisma/client";
 
 export const runCodeService = async ({ slug, code, language }: RunCodeDTO) => {
   logger.info(`Attemp To Run Code : Running code for slug: ${slug}, language: ${language}`);

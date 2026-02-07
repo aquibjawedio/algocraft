@@ -4,17 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && cp -r src/generated dist/generated",
-    "start": "node dist/index.js",
-    "postinstall": "prisma generate && prisma migrate deploy",
-    "dev": "tsx watch --clear-screen=false src/index.ts",
+    "build": "pnpm prisma:generate && tsc",
+    "start": "node dist/src/index.js",
+    "dev": "pnpm prisma:generate && tsx watch --clear-screen=false src/index.ts",
+    "prisma:generate": "prisma generate --config prisma.config.ts",
     "studio": "prisma studio"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "packageManager": "pnpm@10.28.2",
   "dependencies": {
     "@google/genai": "^1.15.0",
+    "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
     "axios": "^1.11.0",
     "bcryptjs": "^3.0.2",
@@ -40,7 +42,7 @@
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^19.1.9",
     "prettier": "^3.6.2",
-    "prisma": "^6.19.2",
+    "prisma": "^7.3.0",
     "tsx": "^4.20.3",
     "typescript": "^5.9.2"
   }
