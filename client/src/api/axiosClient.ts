@@ -60,7 +60,7 @@ axiosClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        await refreshClient.post("/auth/refresh");
+        await refreshClient.get("/auth/refresh");
 
         failedQueue.forEach(({ resolve }) => resolve());
         failedQueue = [];
