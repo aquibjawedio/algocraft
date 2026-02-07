@@ -25,6 +25,9 @@ interface EnvConfigDTO {
   SENDER_EMAIL: string;
 
   JUDGE0_API_URL: string;
+  RAPID_API_KEY: string;
+  RAPID_API_HOST: string;
+
   GEMINI_API_KEY: string;
 
   REDIS_HOST: string;
@@ -58,6 +61,9 @@ const env: EnvConfigDTO = {
   SENDER_EMAIL: process.env.SENDER_EMAIL || "",
 
   JUDGE0_API_URL: process.env.JUDGE0_API_URL || "",
+  RAPID_API_HOST: process.env.RAPID_API_HOST,
+  RAPID_API_KEY: process.env.RAPID_API_KEY,
+
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || "",
 
   REDIS_HOST: process.env.REDIS_HOST || "localhost",

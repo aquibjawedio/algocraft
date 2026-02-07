@@ -1,17 +1,17 @@
 -- CreateEnum
-CREATE TYPE "public"."UserRoleEnum" AS ENUM ('USER', 'CONTRIBUTOR', 'MODERATOR', 'ADMIN');
+CREATE TYPE "UserRoleEnum" AS ENUM ('USER', 'CONTRIBUTOR', 'MODERATOR', 'ADMIN');
 
 -- CreateEnum
-CREATE TYPE "public"."DifficultyEnum" AS ENUM ('EASY', 'MEDIUM', 'HARD');
+CREATE TYPE "DifficultyEnum" AS ENUM ('EASY', 'MEDIUM', 'HARD');
 
 -- CreateEnum
-CREATE TYPE "public"."LanguageEnum" AS ENUM ('CPP', 'PYTHON', 'JAVA', 'JAVASCRIPT');
+CREATE TYPE "LanguageEnum" AS ENUM ('CPP', 'PYTHON', 'JAVA', 'JAVASCRIPT');
 
 -- CreateEnum
-CREATE TYPE "public"."StatusEnum" AS ENUM ('PENDING', 'ACCEPTED', 'WRONG_ANSWER', 'TIME_LIMIT_EXCEEDED', 'MEMORY_LIMIT_EXCEEDED', 'RUNTIME_ERROR', 'COMPILATION_ERROR', 'INTERNAL_ERROR');
+CREATE TYPE "StatusEnum" AS ENUM ('PENDING', 'ACCEPTED', 'WRONG_ANSWER', 'TIME_LIMIT_EXCEEDED', 'MEMORY_LIMIT_EXCEEDED', 'RUNTIME_ERROR', 'COMPILATION_ERROR', 'INTERNAL_ERROR');
 
 -- CreateTable
-CREATE TABLE "public"."User" (
+CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "fullname" TEXT NOT NULL,
     "username" TEXT NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE "public"."User" (
     "contestRating" INTEGER DEFAULT 0,
     "contributions" INTEGER NOT NULL DEFAULT 0,
     "badges" TEXT[] DEFAULT ARRAY[]::TEXT[],
-    "role" "public"."UserRoleEnum" NOT NULL DEFAULT 'USER',
+    "role" "UserRoleEnum" NOT NULL DEFAULT 'USER',
     "isEmailVerified" BOOLEAN NOT NULL DEFAULT false,
     "emailVerificationToken" TEXT,
     "emailVerificationTokenExpiry" TIMESTAMP(3),
@@ -39,7 +39,7 @@ CREATE TABLE "public"."User" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."Session" (
+CREATE TABLE "Session" (
     "id" TEXT NOT NULL,
     "ipAddress" TEXT,
     "userAgent" TEXT,
@@ -56,12 +56,12 @@ CREATE TABLE "public"."Session" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."Problem" (
+CREATE TABLE "Problem" (
     "id" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "difficulty" "public"."DifficultyEnum" NOT NULL DEFAULT 'EASY',
+    "difficulty" "DifficultyEnum" NOT NULL DEFAULT 'EASY',
     "originalSource" JSONB,
     "hints" JSONB,
     "constraints" TEXT,
@@ -78,7 +78,7 @@ CREATE TABLE "public"."Problem" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."StarterCode" (
+CREATE TABLE "StarterCode" (
     "id" TEXT NOT NULL,
     "language" TEXT NOT NULL,
     "code" TEXT NOT NULL,
@@ -90,7 +90,7 @@ CREATE TABLE "public"."StarterCode" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."TestCase" (
+CREATE TABLE "TestCase" (
     "id" TEXT NOT NULL,
     "input" TEXT NOT NULL,
     "output" TEXT NOT NULL,
@@ -102,7 +102,7 @@ CREATE TABLE "public"."TestCase" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."WrapperCode" (
+CREATE TABLE "WrapperCode" (
     "id" TEXT NOT NULL,
     "language" TEXT NOT NULL,
     "code" TEXT NOT NULL,
@@ -114,7 +114,7 @@ CREATE TABLE "public"."WrapperCode" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."ReferenceSolution" (
+CREATE TABLE "ReferenceSolution" (
     "id" TEXT NOT NULL,
     "language" TEXT NOT NULL,
     "code" TEXT NOT NULL,
@@ -126,7 +126,7 @@ CREATE TABLE "public"."ReferenceSolution" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."Tag" (
+CREATE TABLE "Tag" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -136,7 +136,7 @@ CREATE TABLE "public"."Tag" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."Company" (
+CREATE TABLE "Company" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "logoUrl" TEXT,
@@ -147,10 +147,10 @@ CREATE TABLE "public"."Company" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."Submission" (
+CREATE TABLE "Submission" (
     "id" TEXT NOT NULL,
-    "language" "public"."LanguageEnum" NOT NULL DEFAULT 'JAVASCRIPT',
-    "status" "public"."StatusEnum" NOT NULL DEFAULT 'PENDING',
+    "language" "LanguageEnum" NOT NULL DEFAULT 'JAVASCRIPT',
+    "status" "StatusEnum" NOT NULL DEFAULT 'PENDING',
     "code" TEXT NOT NULL,
     "complexity" JSONB,
     "passedTestCases" INTEGER NOT NULL DEFAULT 0,
@@ -171,7 +171,7 @@ CREATE TABLE "public"."Submission" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."SolvedProblem" (
+CREATE TABLE "SolvedProblem" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "problemId" TEXT NOT NULL,
@@ -182,7 +182,7 @@ CREATE TABLE "public"."SolvedProblem" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."Note" (
+CREATE TABLE "Note" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "content" TEXT NOT NULL,
@@ -195,7 +195,7 @@ CREATE TABLE "public"."Note" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."Sheet" (
+CREATE TABLE "Sheet" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
@@ -208,7 +208,7 @@ CREATE TABLE "public"."Sheet" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."_ProblemTags" (
+CREATE TABLE "_ProblemTags" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL,
 
@@ -216,7 +216,7 @@ CREATE TABLE "public"."_ProblemTags" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."_CompanyProblems" (
+CREATE TABLE "_CompanyProblems" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL,
 
@@ -224,112 +224,112 @@ CREATE TABLE "public"."_CompanyProblems" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_username_key" ON "public"."User"("username");
+CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "public"."User"("email");
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_emailVerificationToken_key" ON "public"."User"("emailVerificationToken");
+CREATE UNIQUE INDEX "User_emailVerificationToken_key" ON "User"("emailVerificationToken");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_forgotPasswordToken_key" ON "public"."User"("forgotPasswordToken");
+CREATE UNIQUE INDEX "User_forgotPasswordToken_key" ON "User"("forgotPasswordToken");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_refreshToken_key" ON "public"."User"("refreshToken");
+CREATE UNIQUE INDEX "User_refreshToken_key" ON "User"("refreshToken");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Session_refreshToken_key" ON "public"."Session"("refreshToken");
+CREATE UNIQUE INDEX "Session_refreshToken_key" ON "Session"("refreshToken");
 
 -- CreateIndex
-CREATE INDEX "Session_userId_idx" ON "public"."Session"("userId");
+CREATE INDEX "Session_userId_idx" ON "Session"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Problem_slug_key" ON "public"."Problem"("slug");
+CREATE UNIQUE INDEX "Problem_slug_key" ON "Problem"("slug");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Problem_no_key" ON "public"."Problem"("no");
+CREATE UNIQUE INDEX "Problem_no_key" ON "Problem"("no");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Tag_name_key" ON "public"."Tag"("name");
+CREATE UNIQUE INDEX "Tag_name_key" ON "Tag"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Company_name_key" ON "public"."Company"("name");
+CREATE UNIQUE INDEX "Company_name_key" ON "Company"("name");
 
 -- CreateIndex
-CREATE INDEX "Submission_userId_idx" ON "public"."Submission"("userId");
+CREATE INDEX "Submission_userId_idx" ON "Submission"("userId");
 
 -- CreateIndex
-CREATE INDEX "Submission_problemId_idx" ON "public"."Submission"("problemId");
+CREATE INDEX "Submission_problemId_idx" ON "Submission"("problemId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "SolvedProblem_userId_problemId_key" ON "public"."SolvedProblem"("userId", "problemId");
+CREATE UNIQUE INDEX "SolvedProblem_userId_problemId_key" ON "SolvedProblem"("userId", "problemId");
 
 -- CreateIndex
-CREATE INDEX "Note_userId_idx" ON "public"."Note"("userId");
+CREATE INDEX "Note_userId_idx" ON "Note"("userId");
 
 -- CreateIndex
-CREATE INDEX "Note_problemId_idx" ON "public"."Note"("problemId");
+CREATE INDEX "Note_problemId_idx" ON "Note"("problemId");
 
 -- CreateIndex
-CREATE INDEX "Sheet_userId_idx" ON "public"."Sheet"("userId");
+CREATE INDEX "Sheet_userId_idx" ON "Sheet"("userId");
 
 -- CreateIndex
-CREATE INDEX "_ProblemTags_B_index" ON "public"."_ProblemTags"("B");
+CREATE INDEX "_ProblemTags_B_index" ON "_ProblemTags"("B");
 
 -- CreateIndex
-CREATE INDEX "_CompanyProblems_B_index" ON "public"."_CompanyProblems"("B");
+CREATE INDEX "_CompanyProblems_B_index" ON "_CompanyProblems"("B");
 
 -- AddForeignKey
-ALTER TABLE "public"."Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Problem" ADD CONSTRAINT "Problem_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "public"."User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Problem" ADD CONSTRAINT "Problem_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."StarterCode" ADD CONSTRAINT "StarterCode_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "public"."Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "StarterCode" ADD CONSTRAINT "StarterCode_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."TestCase" ADD CONSTRAINT "TestCase_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "public"."Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "TestCase" ADD CONSTRAINT "TestCase_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."WrapperCode" ADD CONSTRAINT "WrapperCode_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "public"."Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "WrapperCode" ADD CONSTRAINT "WrapperCode_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."ReferenceSolution" ADD CONSTRAINT "ReferenceSolution_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "public"."Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ReferenceSolution" ADD CONSTRAINT "ReferenceSolution_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Submission" ADD CONSTRAINT "Submission_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "public"."Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Submission" ADD CONSTRAINT "Submission_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Submission" ADD CONSTRAINT "Submission_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Submission" ADD CONSTRAINT "Submission_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."SolvedProblem" ADD CONSTRAINT "SolvedProblem_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "public"."Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "SolvedProblem" ADD CONSTRAINT "SolvedProblem_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."SolvedProblem" ADD CONSTRAINT "SolvedProblem_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "SolvedProblem" ADD CONSTRAINT "SolvedProblem_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Note" ADD CONSTRAINT "Note_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Note" ADD CONSTRAINT "Note_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Note" ADD CONSTRAINT "Note_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "public"."Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Note" ADD CONSTRAINT "Note_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Sheet" ADD CONSTRAINT "Sheet_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Sheet" ADD CONSTRAINT "Sheet_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Sheet" ADD CONSTRAINT "Sheet_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "public"."Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Sheet" ADD CONSTRAINT "Sheet_problemId_fkey" FOREIGN KEY ("problemId") REFERENCES "Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."_ProblemTags" ADD CONSTRAINT "_ProblemTags_A_fkey" FOREIGN KEY ("A") REFERENCES "public"."Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_ProblemTags" ADD CONSTRAINT "_ProblemTags_A_fkey" FOREIGN KEY ("A") REFERENCES "Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."_ProblemTags" ADD CONSTRAINT "_ProblemTags_B_fkey" FOREIGN KEY ("B") REFERENCES "public"."Tag"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_ProblemTags" ADD CONSTRAINT "_ProblemTags_B_fkey" FOREIGN KEY ("B") REFERENCES "Tag"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."_CompanyProblems" ADD CONSTRAINT "_CompanyProblems_A_fkey" FOREIGN KEY ("A") REFERENCES "public"."Company"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_CompanyProblems" ADD CONSTRAINT "_CompanyProblems_A_fkey" FOREIGN KEY ("A") REFERENCES "Company"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."_CompanyProblems" ADD CONSTRAINT "_CompanyProblems_B_fkey" FOREIGN KEY ("B") REFERENCES "public"."Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_CompanyProblems" ADD CONSTRAINT "_CompanyProblems_B_fkey" FOREIGN KEY ("B") REFERENCES "Problem"("id") ON DELETE CASCADE ON UPDATE CASCADE;

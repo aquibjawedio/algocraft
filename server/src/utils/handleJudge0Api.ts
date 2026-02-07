@@ -20,7 +20,14 @@ export const getLanguageId = (language: string) => {
 export const submitBatch = async (submissions: Judge0Submission) => {
   const { data } = await axios.post(
     `${env.JUDGE0_API_URL}/submissions/batch?base64_encoded=false`,
-    { submissions }
+    { submissions },
+    {
+      headers: {
+        "X-RapidAPI-Key": env.RAPID_API_KEY,
+        "X-RapidAPI-Host": env.RAPID_API_HOST,
+        "Content-Type": "application/json",
+      },
+    }
   );
   return data as Judge0SubmitBatchResult[];
 };
@@ -36,7 +43,14 @@ export const pollBatchResults = async (tokens: string[]) => {
   while (true) {
     try {
       const { data } = await axios.get(
-        `${env.JUDGE0_API_URL}/submissions/batch?tokens=${joinedTokens}&base64_encoded=true`
+        `${env.JUDGE0_API_URL}/submissions/batch?tokens=${joinedTokens}&base64_encoded=true`,
+        {
+          headers: {
+            "X-RapidAPI-Key": env.RAPID_API_KEY,
+            "X-RapidAPI-Host": env.RAPID_API_HOST,
+            "Content-Type": "application/json",
+          },
+        }
       );
 
       const allDone = data.submissions.every(
