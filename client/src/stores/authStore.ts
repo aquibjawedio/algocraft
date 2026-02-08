@@ -7,6 +7,7 @@ import type {
 } from "@/features/auth/schemas/authSchema";
 import { create } from "zustand";
 import type { UserDTO } from "@/features/user/schemas/userSchema";
+import { toast } from "sonner";
 
 type AuthStore = {
   user: UserDTO | null;
@@ -46,11 +47,13 @@ const useAuthStore = create<AuthStore>((set, get) => ({
     const message =
       error?.response?.data?.message || error?.message || fallback;
     set({ error: message });
+    toast.error(message);
   },
 
   handleSuccess: (response: ApiResponse, fallback = "Operation successful") => {
     const message = response?.data?.data?.message || fallback;
     set({ success: message });
+    toast.error(message);
   },
 
   registerUser: async (formData: RegisterFormDTO) => {

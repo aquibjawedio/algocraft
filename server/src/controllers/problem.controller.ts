@@ -9,12 +9,20 @@ import {
 } from "../services/problem.service.js";
 
 export const createProblemController = asyncHandler(async (req: Request, res: Response) => {
-  const { data } = createProblemSchema.safeParse({
+  const parsed = createProblemSchema.safeParse({
     ...req.body,
     userId: req.user.id,
   });
 
-  const { problem, result } = await createProblemService(data);
+  if (!parsed.success) {
+    return res.status(400).json({
+      success: false,
+      message: "Validation failed",
+      errors: parsed.error.format(),
+    });
+  }
+
+  const { problem, result } = await createProblemService(parsed.data);
 
   return res
     .status(201)

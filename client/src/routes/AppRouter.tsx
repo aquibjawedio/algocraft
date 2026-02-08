@@ -9,6 +9,7 @@ import ProfilePage from "@/features/user/pages/ProfilePage";
 import Layout from "@/layout/Layout";
 import AboutPage from "@/pages/AboutPage";
 import ContactPage from "@/pages/ContactPage";
+import CreateProblemPage from "@/pages/CreateProblemPage";
 import LandingPage from "@/pages/LandingPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import { useAuthStore } from "@/stores/authStore";
@@ -41,6 +42,16 @@ const AppRouter = () => {
           <Route path="/about" element={<AboutPage />} />
         </Route>
         <Route path="/problems/:slug" element={<ProblemPage />} />
+        <Route
+          path="/dashboard/problems/create"
+          element={
+            isAuthenticated ? (
+              <CreateProblemPage />
+            ) : (
+              <Navigate to="/auth/login" />
+            )
+          }
+        />
         // Email Verification and Password Reset
         <Route path="/auth/resend" element={<ResendEmailPage />} />
         <Route

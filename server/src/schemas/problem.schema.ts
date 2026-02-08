@@ -4,41 +4,44 @@ import { z } from "zod";
 const languageEnums = z.enum(Object.values(LanguageEnum));
 
 export const createProblemSchema = z.object({
-  slug: z.string().min(1, "Slug is required"),
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
+  slug: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string().min(1),
   difficulty: z.enum(["EASY", "MEDIUM", "HARD"]),
+  no: z.number().int().positive(),
+
   originalSource: z
     .object({
-      name: z.string().min(1, "Source name is required"),
-      logo: z.string().trim().min(1, "Source logo URL is required"),
-      link: z.string().trim().min(1, "Source logo URL is required"),
+      name: z.string().min(1),
+      logo: z.string().url().optional(),
+      link: z.string().url().optional(),
     })
     .optional(),
-  hints: z.array(z.string()).optional().default([]),
-  constraints: z.string().optional().default(""),
-  no: z.number().int().positive(),
+
+  constraints: z.string().default(""),
+
+  hints: z.array(z.string()).default([]),
 
   metadata: z
     .object({
-      timeComplexity: z.string().optional(),
-      spaceComplexity: z.string().optional(),
-      topics: z.array(z.string()).optional().default([]),
+      timeComplexity: z.string().default(""),
+      spaceComplexity: z.string().default(""),
+      topics: z.array(z.string()).default([]),
     })
-    .optional()
     .default({
       timeComplexity: "",
       spaceComplexity: "",
       topics: [],
     }),
-  tags: z.array(z.string().trim().toLowerCase()).optional().default([]),
-  companies: z.array(z.string()).optional().default([]),
+
+  tags: z.array(z.string()).default([]),
+  companies: z.array(z.string()).default([]),
 
   examples: z.array(
     z.object({
       input: z.string(),
       output: z.string(),
-      explanation: z.string().min(1),
+      explanation: z.string(),
     })
   ),
 
@@ -46,13 +49,16 @@ export const createProblemSchema = z.object({
   wrapperCodes: z.record(languageEnums, z.string()),
   referenceSolutions: z.record(languageEnums, z.string()),
 
-  testCases: z.array(
-    z.object({
-      input: z.string(),
-      output: z.string(),
-    })
-  ),
-  userId: z.string().trim().min(1, "User ID is required"),
+  testCases: z
+    .array(
+      z.object({
+        input: z.string(),
+        output: z.string(),
+      })
+    )
+    .default([]),
+
+  userId: z.string().min(1),
 });
 
 export const getAllProblemsSchema = z.object({});

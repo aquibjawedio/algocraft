@@ -33,8 +33,10 @@ axiosClient.interceptors.request.use(
     console.log("Request URL:", config.url);
     return config;
   },
-  (error: AxiosError) => Promise.reject(error)
+  (error: AxiosError) => Promise.reject(error),
 );
+
+
 
 axiosClient.interceptors.response.use(
   (response: AxiosResponse) => response,
@@ -78,7 +80,7 @@ axiosClient.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export { axiosClient };

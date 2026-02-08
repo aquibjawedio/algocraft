@@ -2,6 +2,7 @@ import { axiosClient } from "@/api/axiosClient";
 import type { ApiError, ApiResponse } from "@/features/auth/schemas/authSchema";
 import { create } from "zustand";
 import type { SubmissionDTO } from "@/features/problem/schemas/problemSchema";
+import { toast } from "sonner";
 
 interface TestResultDTO {
   input: string;
@@ -28,16 +29,16 @@ type ExecutionStore = {
   runCode: (
     slug: string,
     code: string,
-    language: string
+    language: string,
   ) => void | Promise<void>;
   submitCode?: (
     slug: string,
     code: string,
-    language: string
+    language: string,
   ) => void | Promise<void>;
   getAllSubmissions: (slug: string) => void | Promise<void>;
   computeTimeAndSpaceComplexity: (
-    submissionId: string
+    submissionId: string,
   ) => void | Promise<{ time: string; space: string }>;
 };
 
@@ -61,11 +62,13 @@ const useExecutionStore = create<ExecutionStore>((set, get) => ({
     const message =
       error?.response?.data?.message || error?.message || fallback;
     set({ error: message });
+    toast.error(message);
   },
 
   handleSuccess: (response: ApiResponse, fallback = "Operation successful") => {
     const message = response?.data?.data?.message || fallback;
     set({ success: message });
+    toast.success(message);
   },
 
   runCode: async (slug: string, code: string, language: string) => {
@@ -130,7 +133,7 @@ const useExecutionStore = create<ExecutionStore>((set, get) => ({
       const updatedSubmission = response.data.data.submission;
       const complexity = response.data.data.complexity;
       const filtredSubmissions = (get().submissions || []).map((sub) =>
-        sub.id === updatedSubmission.id ? { ...sub, complexity } : sub
+        sub.id === updatedSubmission.id ? { ...sub, complexity } : sub,
       );
       set({
         submission: updatedSubmission,

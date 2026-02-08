@@ -63,7 +63,7 @@ export const problemSchema = z.object({
           .trim()
           .min(1, "Example explanation is required")
           .optional(),
-      })
+      }),
     )
     .min(1, "At least one example is required")
     .optional(),
@@ -79,7 +79,7 @@ export const problemSchema = z.object({
         language: z.string().trim().min(1, "Programming language is required"),
         problemId: z.string().trim().min(1, "Problem ID is required"),
         createdAt: z.date().optional(),
-      })
+      }),
     )
     .min(1, "At least one starter code is required")
     .optional(),
@@ -126,5 +126,56 @@ export type SubmissionDTO = {
     }[];
   };
 };
+
+export const createProblemFormSchema = z.object({
+  slug: z.string().trim().min(1),
+  title: z.string().trim().min(1),
+  description: z.string().trim().min(1),
+
+  difficulty: z.enum(["EASY", "MEDIUM", "HARD"]),
+  no: z.number().int().nonnegative(),
+
+  constraints: z.string().optional(),
+
+  originalSource: z
+    .object({
+      name: z.string().trim().min(1),
+      logo: z.string().url().optional(),
+      link: z.string().url().optional(),
+    })
+    .optional(),
+
+  tags: z.array(z.string().trim()),
+  companies: z.array(z.string().trim()),
+
+  hints: z.array(z.string().trim()).min(1),
+
+  metadata: z.object({
+    topics: z.array(z.string().trim()),
+    timeComplexity: z.string().trim(),
+    spaceComplexity: z.string().trim(),
+  }),
+
+  examples: z.array(
+    z.object({
+      input: z.string().trim(),
+      output: z.string().trim(),
+      explanation: z.string().trim().optional(),
+    }),
+  ),
+
+  starterCodes: z.record(z.string(), z.string()),
+  wrapperCodes: z.record(z.string(), z.string()),
+  referenceSolutions: z.record(z.string(), z.string()),
+
+  testCases: z.array(
+    z.object({
+      input: z.string().trim(),
+      output: z.string().trim(),
+    }),
+  ),
+});
+
+export type CreateProblemFormDTO = z.infer<typeof createProblemFormSchema>;
 
 export type ProblemSchemaDTO = z.infer<typeof problemSchema>;

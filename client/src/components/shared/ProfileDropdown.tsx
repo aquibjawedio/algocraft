@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { User, LogOut } from "lucide-react";
+import { User, LogOut, Book } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ConfirmDialog from "./ConfirmDialog";
 import { useState } from "react";
@@ -47,6 +47,15 @@ const ProfileDropdown = () => {
             >
               <User className="w-4 h-4 mr-2" />
               Profile
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="cursor-pointer bg-background text-foreground"
+              onClick={() => navigate("/dashboard/problems/create")}
+            >
+              <Book className="w-4 h-4 mr-2" />
+              Contribute
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />

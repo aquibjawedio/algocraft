@@ -2,6 +2,8 @@ import { axiosClient } from "@/api/axiosClient";
 import type { ApiError, ApiResponse } from "@/features/auth/schemas/authSchema";
 import { create } from "zustand";
 import type { ProblemSchemaDTO } from "@/features/problem/schemas/problemSchema";
+import type { CreateProblemPayload } from "@/features/problem/schemas/problemPayload";
+import { toast } from "sonner";
 
 type ProblemStore = {
   problems: ProblemSchemaDTO[] | null;
@@ -17,6 +19,7 @@ type ProblemStore = {
   handleSuccess: (response: ApiResponse, fallback?: string) => void;
   getAllProblems: () => void | Promise<void>;
   getProblemBySlug: (slug: string) => void | Promise<void>;
+  createProblem: (payload: CreateProblemPayload) => Promise<void>;
 };
 
 const useProblemStore = create<ProblemStore>((set, get) => ({
@@ -36,11 +39,13 @@ const useProblemStore = create<ProblemStore>((set, get) => ({
     const message =
       error?.response?.data?.message || error?.message || fallback;
     set({ error: message });
+    toast.error(message);
   },
 
   handleSuccess: (response: ApiResponse, fallback = "Operation successful") => {
     const message = response?.data?.data?.message || fallback;
     set({ success: message });
+    toast.success(message);
   },
 
   getAllProblems: async () => {
@@ -71,6 +76,27 @@ const useProblemStore = create<ProblemStore>((set, get) => ({
     }
   },
 
+  createProblem: async (payload: CreateProblemPayload) => {
+    const { startLoading, stopLoading, handleError, handleSuccess, problems } =
+      get();
+
+    try {
+      startLoading();
+
+      const response = await axiosClient.post("/problems", payload);
+      const createdProblem = response.data.data.problem;
+
+      set({
+        problems: problems ? [createdProblem, ...problems] : [createdProblem],
+      });
+
+      handleSuccess(response, "Problem created successfully");
+    } catch (error) {
+      handleError(error as ApiError, "Failed to create problem");
+    } finally {
+      stopLoading();
+    }
+  },
 }));
 
 export { useProblemStore };

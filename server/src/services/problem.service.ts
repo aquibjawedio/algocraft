@@ -27,6 +27,25 @@ export const createProblemService = async ({
   testCases,
   userId,
 }: CreateProblemDTO) => {
+  const slugExists = await prisma.problem.findFirst({
+    where: {
+      slug,
+    },
+  });
+
+  if (slugExists) {
+    throw new ApiError(403, "A problem with this slug already exists. Please use a unique number");
+  }
+  const numberExists = await prisma.problem.findFirst({
+    where: {
+      no,
+    },
+  });
+
+  if (numberExists) {
+    throw new ApiError(403, "A problem with this no already exists. Please use a unique number");
+  }
+
   const exampleResult = await validateReferenceSolution(referenceSolutions, wrapperCodes, examples);
   const testCaseResult = await validateReferenceSolution(
     referenceSolutions,
