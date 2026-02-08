@@ -343,6 +343,7 @@ export const checkUsernameAvailabilityService = async ({
   if (usernameExists === "available") {
     logger.info(`Username ${username} is available in cache`);
     return {
+      username,
       isAvailable: true,
       message: "Username is available",
     };
@@ -351,6 +352,7 @@ export const checkUsernameAvailabilityService = async ({
   if (usernameExists === "taken") {
     logger.warn(`Username ${username} is already taken`);
     return {
+      username,
       isAvailable: false,
       message: "Username is already taken",
     };
@@ -366,6 +368,7 @@ export const checkUsernameAvailabilityService = async ({
     logger.warn(`Username ${username} is already taken`);
     await redis.set(`user:username:${username}`, "taken", "EX", 60 * 60 * 24 * 7);
     return {
+      username,
       isAvailable: false,
       message: "Username is already taken",
     };
@@ -374,6 +377,7 @@ export const checkUsernameAvailabilityService = async ({
   logger.info(`Username ${username} is available`);
   await redis.set(`user:username:${username}`, "available", "EX", 60 * 60 * 24 * 7);
   return {
+    username,
     isAvailable: true,
     message: "Username is available",
   };

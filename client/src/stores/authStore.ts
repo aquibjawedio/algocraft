@@ -191,7 +191,7 @@ const useAuthStore = create<AuthStore>((set, get) => ({
     const { startLoading, stopLoading, handleError, clearError } = get();
     try {
       startLoading();
-      const response = await axiosClient.get(`/auth/${username}`);
+      const response = await axiosClient.get(`/auth/check/${username}`);
       clearError();
       return response.data.data.isAvailable;
     } catch (error) {

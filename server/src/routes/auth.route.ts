@@ -16,6 +16,6 @@ authRouter.route("/verify-email/:token").get(verifyEmailController);
 authRouter.route("/login").post(loginController);
 authRouter.route("/logout").post(isLoggedIn, logutController);
 authRouter.route("/refresh").get(refreshAccessTokenController);
-authRouter.route("/:username").get(checkUsernameAvailabilityController);
+authRouter.route("/check/:username").get(checkUsernameAvailabilityController);
 
 export { authRouter };
